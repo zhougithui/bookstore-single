@@ -1,5 +1,12 @@
 package org.bear.bookstore.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import lombok.Data;
 
 /**
@@ -8,11 +15,15 @@ import lombok.Data;
  *
  */
 @Data
+@Entity
 public class Custom {
-	private long id;
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int id;
 	private String cusName;
 	private String phone;
 	private String email;
+	@Enumerated(EnumType.ORDINAL)
 	private Sex sex;
 	private String address;
 	
