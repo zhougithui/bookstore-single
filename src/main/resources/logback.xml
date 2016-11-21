@@ -25,6 +25,10 @@
 	<logger name="com.alibaba.dubbo">
 		<appender-ref ref="consoleLog"/> 
 	</logger>
+	
+	<logger name="org.springframework" level="${LOG_LEVEL}">
+		<appender-ref ref="consoleLog"/> 
+	</logger>
 
 	<!-- 根logger的设置-->
 	<!-- 控制台日志监测到info级别 -->

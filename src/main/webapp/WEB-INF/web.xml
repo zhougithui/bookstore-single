@@ -6,11 +6,15 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring-app.xml,classpath:spring-hibernate.xml</param-value>
 	</context-param>
-	<listener>
+	<!-- <listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-	</listener>
+	</listener> -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<!-- 防止缓存泄露 -->
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
 	</listener>
 
 	<!-- 配置字符编码过滤器，编码格式设为UTF-8，避免中文乱码 -->

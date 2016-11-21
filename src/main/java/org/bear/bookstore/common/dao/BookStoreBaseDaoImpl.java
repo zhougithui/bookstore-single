@@ -16,8 +16,11 @@ import java.util.List;
 
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.jdbc.Work;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBookStoreBaseDao<T> {
@@ -31,17 +34,27 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 		}
 		return entityClass;
 	}
+	
+	/**
+	 * HibernateDaoSupport中方法不会给我们注入任何东西，需要我们手动注入
+	 * @param sessionFactory
+	 */
+	@Autowired  
+	public void setMySessionFactory(SessionFactory sessionFactory){  
+	    super.setSessionFactory(sessionFactory);  
+	} 
 
 	/**
 	 * <保存实体> <完整保存实体>
 	 * 
 	 * @param t
 	 *            实体参数
+	 * @return 
 	 * @see com.itv.launcher.util.IBaseDao#save(java.lang.Object)
 	 */
 	@Override
-	public void save(T t) {
-		this.getSession().save(t);
+	public Serializable save(T t) {
+		return this.getSession().save(t);
 	}
 
 	/**
@@ -66,7 +79,7 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 */
 	@Override
 	public T load(Serializable id) {
-		T load = (T) this.getSession().load(getEntityClass(), id);
+		T load = this.getSession().load(getEntityClass(), id);
 		return load;
 	}
 
@@ -80,7 +93,7 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 */
 	@Override
 	public T get(Serializable id) {
-		T load = (T) this.getSession().get(getEntityClass(), id);
+		T load = this.getSession().get(getEntityClass(), id);
 		return load;
 	}
 
@@ -148,18 +161,18 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 *            hql
 	 * @param values
 	 *            不定参数数组
-	 * @see com.itv.launcher.util.IBaseDao#queryHql(java.lang.String,
+	 * @see com.itv.launcher.util.IBaseDao#updateByHql(java.lang.String,
 	 *      java.lang.Object[])
 	 */
 	@Override
-	public void queryHql(String hqlString, Object... values) {
-		Query query = this.getSession().createQuery(hqlString);
+	public int updateByHql(String hqlString, Object... values) {
+		Query<T> query = this.getSession().createQuery(hqlString, entityClass);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				query.setParameter(i, values[i]);
 			}
 		}
-		query.executeUpdate();
+		return query.executeUpdate();
 	}
 
 	/**
@@ -169,18 +182,18 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 *            sql
 	 * @param values
 	 *            不定参数数组
-	 * @see com.itv.launcher.util.IBaseDao#querySql(java.lang.String,
+	 * @see com.itv.launcher.util.IBaseDao#updateBySql(java.lang.String,
 	 *      java.lang.Object[])
 	 */
 	@Override
-	public void querySql(String sqlString, Object... values) {
-		Query query = this.getSession().createSQLQuery(sqlString);
+	public int updateBySql(String sqlString, Object... values) {
+		Query<T> query = this.getSession().createNativeQuery(sqlString, entityClass);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				query.setParameter(i, values[i]);
 			}
 		}
-		query.executeUpdate();
+		return query.executeUpdate();
 	}
 
 	/**
@@ -196,13 +209,13 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 */
 	@Override
 	public T getByHQL(String hqlString, Object... values) {
-		Query query = this.getSession().createQuery(hqlString);
+		Query<T> query = this.getSession().createQuery(hqlString, entityClass);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				query.setParameter(i, values[i]);
 			}
 		}
-		return (T) query.uniqueResult();
+		return query.getSingleResult();
 	}
 
 	/**
@@ -218,13 +231,14 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 */
 	@Override
 	public T getBySQL(String sqlString, Object... values) {
-		Query query = this.getSession().createSQLQuery(sqlString);
+		Query<T> query = this.getSession().createNativeQuery(sqlString, entityClass);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				query.setParameter(i, values[i]);
 			}
 		}
-		return (T) query.uniqueResult();
+		
+		return query.getSingleResult();
 	}
 
 	/**
@@ -240,20 +254,20 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 */
 	@Override
 	public List<T> getListByHQL(String hqlString, Object... values) {
-		Query query = this.getSession().createQuery(hqlString);
+		Query<T> query = this.getSession().createQuery(hqlString, entityClass);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				query.setParameter(i, values[i]);
 			}
 		}
-		return query.list();
+		return query.getResultList();
 	}
 
 	/**
 	 * <根据SQL语句，得到对应的list>
 	 * 
 	 * @param sqlString
-	 *            HQL语句
+	 *            SQL语句
 	 * @param values
 	 *            不定参数的Object数组
 	 * @return 查询多个实体的List集合
@@ -262,13 +276,13 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 */
 	@Override
 	public List<T> getListBySQL(String sqlString, Object... values) {
-		Query query = this.getSession().createSQLQuery(sqlString);
+		Query<T> query = this.getSession().createNativeQuery(sqlString, entityClass);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				query.setParameter(i, values[i]);
 			}
 		}
-		return query.list();
+		return query.getResultList();
 	}
 
 	/**
@@ -276,33 +290,28 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 * 
 	 * @param sql
 	 * @param map
-	 * @param values
+	 * @param values sql参数
 	 * @return List
-	 * @see com.itv.launcher.util.IBaseDao#findListBySql(java.lang.String,
-	 *      com.itv.launcher.util.RowMapper, java.lang.Object[])
 	 */
 	@Override
-	public List<T> findListBySql(final String sql, final RowMapper map, final Object... values) {
-		final List list = new ArrayList();
+	public List<T> findListBySql(final String sql, final RowMapper<T> map, final Object... values) {
+		final List<T> list = new ArrayList<>();
 		// 执行JDBC的数据批量保存
 		Work jdbcWork = new Work() {
 			public void execute(Connection connection) throws SQLException {
-
 				PreparedStatement ps = null;
 				ResultSet rs = null;
 				try {
 					ps = connection.prepareStatement(sql);
 					for (int i = 0; i < values.length; i++) {
 						setParameter(ps, i, values[i]);
-
 					}
 
 					rs = ps.executeQuery();
 					int index = 0;
 					while (rs.next()) {
-						Object obj = map.mapRow(rs, index++);
+						T obj = map.mapRow(rs, index++);
 						list.add(obj);
-
 					}
 				} finally {
 					if (rs != null) {
@@ -324,7 +333,6 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 * 
 	 * @param t
 	 *            实体
-	 * @see com.itv.launcher.util.IBaseDao#refresh(java.lang.Object)
 	 */
 	@Override
 	public void refresh(T t) {
@@ -336,7 +344,6 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 * 
 	 * @param t
 	 *            实体
-	 * @see com.itv.launcher.util.IBaseDao#update(java.lang.Object)
 	 */
 	@Override
 	public void update(T t) {
@@ -356,13 +363,13 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	 */
 	@Override
 	public Long countByHql(String hql, Object... values) {
-		Query query = this.getSession().createQuery(hql);
+		Query<T> query = this.getSession().createQuery(hql, entityClass);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				query.setParameter(i, values[i]);
 			}
 		}
-		return (Long) query.uniqueResult();
+		return (Long) query.getSingleResult();
 	}
 
 	/**
@@ -386,7 +393,7 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 	public PageResults<T> findPageByFetchedHql(String hql, String countHql, int pageNo, int pageSize,
 			Object... values) {
 		PageResults<T> retValue = new PageResults<T>();
-		Query query = this.getSession().createQuery(hql);
+		Query<T> query = this.getSession().createQuery(hql, entityClass);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				query.setParameter(i, values[i]);
@@ -396,20 +403,20 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 		retValue.setCurrentPage(currentPage);
 		retValue.setPageSize(pageSize);
 		if (countHql == null) {
+			@SuppressWarnings("deprecation")
 			ScrollableResults results = query.scroll();
 			results.last();
-			retValue.setTotalCount(results.getRowNumber() + 1);// 设置总记录数
+			retValue.setTotalCount(results.getRowNumber() + 1);//设置总记录数
 		} else {
 			Long count = countByHql(countHql, values);
 			retValue.setTotalCount(count.intValue());
 		}
 		retValue.resetPageNo();
-		List<T> itemList = query.setFirstResult((currentPage - 1) * pageSize).setMaxResults(pageSize).list();
+		List<T> itemList = query.setFirstResult((currentPage - 1) * pageSize).setMaxResults(pageSize).getResultList();
 		if (itemList == null) {
 			itemList = new ArrayList<T>();
 		}
 		retValue.setResults(itemList);
-
 		return retValue;
 	}
 
@@ -438,7 +445,7 @@ public class BookStoreBaseDaoImpl<T> extends HibernateDaoSupport implements IBoo
 			ps.setNull(pos + 1, Types.VARCHAR);
 			return;
 		}
-		Class dataCls = data.getClass();
+		Class<?> dataCls = data.getClass();
 		if (String.class.equals(dataCls)) {
 			ps.setString(pos + 1, (String) data);
 		} else if (boolean.class.equals(dataCls)) {

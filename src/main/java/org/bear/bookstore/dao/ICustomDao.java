@@ -1,9 +1,7 @@
 package org.bear.bookstore.dao;
 
+import org.bear.bookstore.common.dao.IBookStoreBaseDao;
 import org.bear.bookstore.domain.Custom;
 
-public interface ICustomDao {
-	public void insert(Custom cus);
-
-	public Custom select(int id);
+public interface ICustomDao extends IBookStoreBaseDao<Custom>{
 }

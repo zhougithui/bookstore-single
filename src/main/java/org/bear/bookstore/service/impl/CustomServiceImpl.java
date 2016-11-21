@@ -7,16 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomImpl implements ICustomService {
+public class CustomServiceImpl implements ICustomService {
 	@Autowired
 	private ICustomDao customDao;
+	
 	@Override
 	public void insert(Custom cus) {
-		customDao.insert(cus);
+		customDao.save(cus);
 	}
 	@Override
 	public Custom select(int id) {
-		return customDao.select(id);
+		return customDao.get(id);
 	}
 
 }
