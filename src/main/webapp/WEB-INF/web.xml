@@ -14,7 +14,7 @@
 	<!-- 切换环境 -->
 	<context-param>
 		<param-name>spring.profiles.active</param-name>
-		<param-value>dev</param-value>
+		<param-value>prod</param-value>
 	</context-param>
 	<!-- <listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>

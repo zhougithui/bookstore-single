@@ -9,5 +9,6 @@
 	<context:property-placeholder location="classpath:application-${spring.profiles.active}.properties"/>
 	<!-- 扫描service自动注入为bean -->
 	<context:component-scan base-package="org.bear.bookstore.service.impl,org.bear.bookstore.dao.impl" />
-	<context:load-time-weaver/>
+	<!-- 未解决 -->
+	<!-- <context:load-time-weaver/> -->
 </beans>
