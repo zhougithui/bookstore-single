@@ -91,6 +91,20 @@
 		    <artifactId>spring-orm</artifactId>
 		    <version>${spring.version}</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-test</artifactId>
+		    <version>${spring.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<!-- <dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-instrument</artifactId>
+		    <version>${spring.version}</version>
+		    <scope>compile</scope>
+		</dependency> -->
 				
 	
 		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
@@ -236,7 +250,6 @@
 	</dependencies>
 
 	<build>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -247,6 +260,9 @@
 					<!-- 目标平台编译版本 -->
 					<target>${java.version}</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
+					<!-- <compilerArgs>
+						<compilerArg>-javaagent:lib/aspectjweaver-1.8.9.jar</compilerArg>
+					</compilerArgs> -->
 				</configuration>
 			</plugin>
 			<plugin>

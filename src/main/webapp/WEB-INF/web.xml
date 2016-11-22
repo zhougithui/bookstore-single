@@ -6,6 +6,16 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring-app.xml,classpath:spring-hibernate.xml</param-value>
 	</context-param>
+	<!-- 设置默认的配置文件属性，如果 spring.profiles.active没有配置则会选择dev-->
+	<!-- <context-param>
+		<param-name>spring.profiles.default</param-name>
+		<param-value>dev</param-value>
+	</context-param> -->
+	<!-- 切换环境 -->
+	<context-param>
+		<param-name>spring.profiles.active</param-name>
+		<param-value>dev</param-value>
+	</context-param>
 	<!-- <listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener> -->

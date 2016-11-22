@@ -24,8 +24,8 @@
 		<!-- 连接数据库连接池最大空闲时间 -->
 		<property name="maxIdleTime" value="30" />
 		<!-- 连接池初始化连接数 -->
-		<property name="initialPoolSize" value="50" />
-		<property name="minPoolSize" value="50" />
+		<property name="initialPoolSize" value="10" />
+		<property name="minPoolSize" value="10" />
 		<property name="maxPoolSize" value="20" />
 		<!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。默认值: 3 -->
 		<property name="acquireIncrement" value="5" />
@@ -82,9 +82,12 @@
 			<tx:method name="*"/>
 		</tx:attributes>
 	</tx:advice>
-
+	
+	<!-- 激活自动代理功能 -->
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+	
 	<!-- Spring aop事务管理 -->
-	<aop:config>
+	<aop:config proxy-target-class="true">
 		<!-- 配置切入点 -->
 		<aop:pointcut id="transactionPointcut"
 			expression="execution(* org.bear.bookstore.service..*impl.*(..))" />
