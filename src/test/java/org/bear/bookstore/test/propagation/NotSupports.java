@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public class Required {
+public class NotSupports {
 	@Autowired HibernateTemplate hibernateTemplate;
 	
 	@Transactional(
@@ -27,10 +27,19 @@ public class Required {
 		
 		b();
 	}
+	
 	@Transactional(
-			propagation=Propagation.REQUIRED
+			propagation=Propagation.NOT_SUPPORTED
 			)
 	public void b(){
+		Custom cus = new Custom();
+		cus.setAddress("北京市，朝阳区，十里河村");
+		cus.setCusName("zmy");
+		cus.setEmail("zmy@qq.com");
+		cus.setPhone("15555555555");
+		cus.setSex(Sex.Female);
+		hibernateTemplate.save(cus);
+		
 		int x = 1/0;
 		System.out.println(x);
 	}

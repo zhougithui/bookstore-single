@@ -64,6 +64,9 @@
 		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	
+	<!-- 开始注解方式事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
 
 	<!-- 配置事务增强处理Bean，指定事务管理器 -->
 	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
