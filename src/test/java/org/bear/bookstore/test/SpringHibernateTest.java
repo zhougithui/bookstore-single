@@ -5,6 +5,7 @@ import org.bear.bookstore.domain.Custom.Sex;
 import org.bear.bookstore.service.ICustomService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class SpringHibernateTest {
 	public static void main(String[] args) {
@@ -21,6 +22,11 @@ public class SpringHibernateTest {
 		cus.setSex(Sex.Male);
 		
 		cusService.insert(cus);*/
+		/**
+		 * 如果不激活事务同步，怎会出现如下异常
+		 * Could not obtain transaction-synchronized Session for current thread
+		 */
+		TransactionSynchronizationManager.initSynchronization();
 		System.out.println(cusService.select(2));
 		ac.close();
 	}

@@ -4,11 +4,11 @@
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans 
-		http://www.springframework.org/schema/beans/spring-beans-4.1.xsd 
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
 		http://www.springframework.org/schema/tx 
-		http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
 		http://www.springframework.org/schema/aop 
-		http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 	<!-- 配置数据源 c3p0 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
@@ -24,8 +24,8 @@
 		<!-- 连接数据库连接池最大空闲时间 -->
 		<property name="maxIdleTime" value="30" />
 		<!-- 连接池初始化连接数 -->
-		<property name="initialPoolSize" value="5" />
-		<property name="minPoolSize" value="5" />
+		<property name="initialPoolSize" value="50" />
+		<property name="minPoolSize" value="50" />
 		<property name="maxPoolSize" value="20" />
 		<!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。默认值: 3 -->
 		<property name="acquireIncrement" value="5" />
