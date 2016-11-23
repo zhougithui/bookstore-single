@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-4.2.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+	<context:component-scan base-package="org.bear.bookstore.test.aop"></context:component-scan>
+	
+	<bean id="settersAndAbsquatulateAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <!-- [通知,特定连接点所采取的动作] -->
+        <!-- 加入切面,切面为当执行完print方法后 再执行加入的切面 -->
+	    <property name="advice">
+	        <ref bean="debugInterceptor"/>
+	    </property>
+	    <property name="patterns">
+	        <list>
+	        	<!--  .表示符合任何单一字元
+                 ###  +表示符合前一个字元一次或多次
+                 ###  *表示符合前一个字元零次或多次
+                 ###  \Escape任何Regular expression使用到的符号
+                 -->
+                 <!-- .*表示前面的前缀(包括包名) 表示print方法-->
+	            <value>.*set</value>
+	            <value>.*absquatulate</value>
+	        </list>
+	    </property>
+	</bean>
+	
+	<!-- ### 代理工程  -->
+    <!-- <bean id="proxyFactory" class="org.springframework.aop.framework.ProxyFactoryBean">
+       指定目标对象,目标对象是aopService对象
+       <property name="target">
+          <ref bean="aopService"/>
+       </property>
+       该目标中加入拦截器pointcutAdvisor
+       <property name="interceptorNames">
+          <list>
+              <value>settersAndAbsquatulateAdvisor</value>
+          </list>
+       </property>
+    </bean> -->
+    
+    <!-- 自动创建代理 -->
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+	    <property name="beanNames"><value>aopS*</value></property>
+	    <property name="interceptorNames">
+	        <list>
+	            <value>debugInterceptor</value>
+	        </list>
+	    </property>
+	</bean>
+</beans>
