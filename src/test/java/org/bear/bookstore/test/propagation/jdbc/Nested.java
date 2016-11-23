@@ -16,8 +16,8 @@ public class Nested {
 			)
 	public void a(){
 		jdbcTemplate.execute("insert into custom(address,cusname,email,phone,sex) values('北京市，朝阳区，十里河村','zhouhui','zh@qq.com','15555555555','1')");
-		
-		b();
+		int x = 1/0;
+		System.out.println(x);
 	}
 	
 	@Transactional(
@@ -27,8 +27,8 @@ public class Nested {
 	public void b(){
 		jdbcTemplate.execute("insert into custom(address,cusname,email,phone,sex) values('北京市，朝阳区，十里河村','zmy','zmy@qq.com','15555555555','0')");
 		
-		/*int x = 1/0;
-		System.out.println(x);*/
+		int x = 1/0;
+		System.out.println(x);
 	}
 	
 }

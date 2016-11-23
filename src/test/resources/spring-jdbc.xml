@@ -42,5 +42,5 @@
 	</bean>
 	
 	<!-- 开始注解方式事务 -->
-	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 </beans>

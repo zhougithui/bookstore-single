@@ -1,7 +1,5 @@
 package org.bear.bookstore.test.propagation;
 
-import org.bear.bookstore.test.propagation.jdbc.Nested;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -87,19 +85,4 @@ public class TransactionPropagationTest {
 		NotSupports.a();
 	}
 	
-	
-	//__________________________________
-	/**
-	 * 运行在datasourcemanager中
-	 */
-	@Autowired Nested Nested;
-	/**
-	 * PROPAGATION_NESTED 
-	 * 	
-	 */
-	@Test
-	public void NestedTest(){
-		//Nested.b();
-		Nested.a();
-	}
 }
