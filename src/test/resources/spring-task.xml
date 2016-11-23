@@ -9,10 +9,22 @@
 			http://www.springframework.org/schema/context/spring-context-4.2.xsd
 			http://www.springframework.org/schema/task
 			http://www.springframework.org/schema/task/spring-task.xsd">
-	<!-- 加载配置文件 -->
-	<context:property-placeholder location="classpath:application-${spring.profiles.active}.properties"/>
+			
+	<bean id="exeHandler" class="org.bear.bookstore.test.task.BookStoreAsyncUncaughtExceptionHandler"></bean>
+    <task:executor 
+    	id="executor" 
+    	pool-size="10"
+    	queue-capacity="100"
+    	keep-alive="60"
+    	rejection-policy="CALLER_RUNS"/>
+    	
+    <task:scheduler id="scheduler" pool-size="10"/>
+    <task:annotation-driven 
+    	executor="executor" 
+    	scheduler="scheduler"
+    	exception-handler="exeHandler"
+    	proxy-target-class="true"/>
+    	
 	<!-- 扫描service自动注入为bean -->
-	<context:component-scan base-package="org.bear.bookstore.service.impl,org.bear.bookstore.dao.impl" />
-	<!-- 未解决 -->
-	<!-- <context:load-time-weaver/> -->
+	<context:component-scan base-package="org.bear.bookstore.test.task" />
 </beans>
