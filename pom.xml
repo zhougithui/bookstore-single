@@ -99,12 +99,13 @@
 		    <scope>test</scope>
 		</dependency>
 		
-		<!-- <dependency>
+		<!-- load time weaving 加载时织入 -->
+		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-instrument</artifactId>
 		    <version>${spring.version}</version>
 		    <scope>compile</scope>
-		</dependency> -->
+		</dependency>
 	
 		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
 		<dependency>
@@ -213,7 +214,13 @@
 		    <artifactId>aspectjweaver</artifactId>
 		    <version>1.8.9</version>
 		</dependency>
-		
+		<!-- 
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.7</version>
+		</dependency>
+		 -->
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
@@ -294,6 +301,7 @@
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
+			
 		</plugins>
 	</build>
 </project>

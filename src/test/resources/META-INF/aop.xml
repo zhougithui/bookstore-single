@@ -1,0 +1,11 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+    <weaver>
+        <!-- only weave classes in our application-specific packages -->
+        <include within="org.bear.bookstore.test.aspectj.example1.*"/>
+    </weaver>
+    <!-- weave in just this aspect -->
+    <!-- <aspects>
+        <aspect name="foo.ProfilingAspect"/>
+    </aspects> -->
+</aspectj>
