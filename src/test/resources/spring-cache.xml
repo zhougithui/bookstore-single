@@ -26,6 +26,7 @@
    		error-handler，缓存异常处理器
    		proxy-target-class，是否启用cglib，默认是false
    		order=""，advice通知顺序
+   		mode aspectj -javaagent:F:/worksoftware/maven333/repos/org/aspectj/aspectjweaver/1.8.9/aspectjweaver-1.8.9.jar
    	 -->
 	<bean id="simpleCacheResolver" 
 		class="org.springframework.cache.interceptor.SimpleCacheResolver"
@@ -37,7 +38,7 @@
 			cache-resolver="simpleCacheResolver"
 			key-generator="simpleKeyGenerator"
 			error-handler="simpleCacheErrorHandler"
-			mode="proxy"
+			mode="aspectj"
 			proxy-target-class="true" 
 			/>
 			
@@ -95,7 +96,7 @@
 	</cache:advice>
 	
 	<!-- apply the cacheable behavior to all BookService interfaces -->
-	<aop:config proxy-target-class="true">
+	<aop:config proxy-target-class="false">
 	    <aop:advisor advice-ref="cacheAdvice" pointcut="execution(* org.bear.bookstore.test.cache..*(..))"/>
 	</aop:config>
 	

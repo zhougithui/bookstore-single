@@ -83,6 +83,10 @@ public class CacheTest {
 	/**
 	 * spring对jsr107注解的支持，需要jcache-api包和spring-context-support包
 	 */
+	/**
+	 * 如果采用aspectj loadtimeweaver则需要指定javaagent
+	 * -javaagent:F:/worksoftware/maven333/repos/org/aspectj/aspectjweaver/1.8.9/aspectjweaver-1.8.9.jar
+	 */
 	@Test
 	public void testJsr107(){
 		 System.out.println("start testing clear cache...");   
