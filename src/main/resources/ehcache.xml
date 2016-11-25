@@ -14,7 +14,7 @@
 
 	<!-- Special objects setting. -->
 	<cache 
-	     name="org.bear.bookstore.domain.Custom"
+	     name="ehCustomCache"
 		 maxElementsInMemory="2"
 		 memoryStoreEvictionPolicy="LRU" 
 		 eternal="true" 

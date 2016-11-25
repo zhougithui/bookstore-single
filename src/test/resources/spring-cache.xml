@@ -18,8 +18,29 @@
 		http://www.springframework.org/schema/cache 
      	http://www.springframework.org/schema/cache/spring-cache-4.2.xsd">
    	<context:component-scan base-package="org.bear.bookstore.test.cache"></context:component-scan>
-   	<!-- 开区缓存注解驱动 -->
-	<cache:annotation-driven />
+   	<!-- 
+   		开区缓存注解驱动
+   		cache-manager，指定缓存管理的名称，cache-resolver通过名称去解析
+   		cache-resolver，缓存解析器
+   		key-generator，键值生成策略
+   		error-handler，缓存异常处理器
+   		proxy-target-class，是否启用cglib，默认是false
+   		order=""，advice通知顺序
+   	 -->
+	<bean id="simpleCacheResolver" 
+		class="org.springframework.cache.interceptor.SimpleCacheResolver"
+		p:cache-manager-ref="cacheManager" />
+	<bean id="simpleKeyGenerator" class="org.springframework.cache.interceptor.SimpleKeyGenerator"></bean>
+	<bean id="simpleCacheErrorHandler" class="org.springframework.cache.interceptor.SimpleCacheErrorHandler"></bean>
+	<cache:annotation-driven 
+			cache-manager="cacheManager"
+			cache-resolver="simpleCacheResolver"
+			key-generator="simpleKeyGenerator"
+			error-handler="simpleCacheErrorHandler"
+			mode="proxy"
+			proxy-target-class="true" 
+			/>
+			
 	<!-- generic cache manager -->
 	<!-- <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
 		<property name="caches">
@@ -41,9 +62,9 @@
 				<bean
 					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
 					p:name="default" />
-				<!-- <bean
+				<bean
 					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
-					p:name="customCache" /> -->
+					p:name="customCache" />
 			</set>
 		</property>
 	</bean>
@@ -53,6 +74,7 @@
 		<property name="cacheManagers">
 			<list>
 				<ref bean="simpleCacheManager" />
+				<ref bean="ehCacheManager"/>
 			</list>
 		</property>
 		<!-- 
@@ -61,4 +83,27 @@
 		<property name="fallbackToNoOpCache" value="false" />
 		<!-- <property name="fallbackToNoOpCache" value="true" /> -->
 	</bean> 
+	
+	
+	<!-- cache definitions -->
+	<cache:advice id="cacheAdvice" cache-manager="cacheManager">
+	    <cache:caching cache="customCache">
+	        <cache:cacheable method="getCustom" key="#cusName"/>
+	        <cache:cache-evict method="updateAccount" key="#cus.getCusName()"/>
+	        <cache:cache-evict method="reload" all-entries="true"/>
+	    </cache:caching>
+	</cache:advice>
+	
+	<!-- apply the cacheable behavior to all BookService interfaces -->
+	<aop:config proxy-target-class="true">
+	    <aop:advisor advice-ref="cacheAdvice" pointcut="execution(* org.bear.bookstore.test.cache..*(..))"/>
+	</aop:config>
+	
+	<!-- 使用ehcache做缓存 -->
+	<bean id="ehCacheManager"
+		class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/>
+
+	<!-- EhCache library setup -->
+	<bean id="ehcache"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml"/>
 </beans>
