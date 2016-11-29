@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+	<context:component-scan base-package="org.bear.bookstore.test.parentson.son" />
+	<!-- 
+		spring-app-parent.xml父容器定了id为b的类，如果子容器中的b想引用父类中的b则需要指定parent 
+		@Service
+		public class A {
+			@Autowired
+			private B b;
+			public void hello(){
+				b.hello();
+			}
+		}
+		如果直接通过注解定义，效果就相当于下面的xml
+		
+		@Service("b")
+		@Setter
+		@Getter
+		public class A {
+			@Autowired
+			private B b;
+			public void hello(){
+				b.hello();
+			}
+		}
+		这样就会出现问题，因为找到了为b的BeanDefinition，指向了org.bear.bookstore.test.parentson.son.A，
+		但是我们需要的是org.bear.bookstore.test.parentson.parent.B，不过我没遇到这种变态的需求
+	-->
+	<!-- <bean id="b" class="org.bear.bookstore.test.parentson.son.A">
+		<property name="b">
+			<ref parent="b"/>
+		</property>
+	</bean> -->
+</beans>

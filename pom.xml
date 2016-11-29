@@ -291,7 +291,16 @@
 		    <artifactId>transactions-hibernate4</artifactId>
 		    <version>4.0.4</version>
 		</dependency>
-				
+		
+		
+		<!-- https://mvnrepository.com/artifact/cglib/cglib -->
+		<dependency>
+		    <groupId>cglib</groupId>
+		    <artifactId>cglib</artifactId>
+		    <version>3.2.4</version>
+		    <scope>test</scope>
+		</dependency>
+					
 	</dependencies>
 
 	<build>
