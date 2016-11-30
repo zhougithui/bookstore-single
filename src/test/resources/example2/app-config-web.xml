@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">                    
+ 
+	<!-- 扫描controller自动注入为bean -->
+	<context:component-scan base-package="org.bear.bookstore.integrations.example2.web" />
+	
+	<!-- don't handle the static resource -->
+    <mvc:default-servlet-handler />
+ 
+    <!-- if you use annotation you must configure following setting -->
+    <mvc:annotation-driven />
+    
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">  
+        <property name="messageConverters">  
+            <list>  
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>  
+                <bean  
+                    class="org.springframework.http.converter.StringHttpMessageConverter">  
+                    <property name="supportedMediaTypes">  
+                        <list>  
+                            <value>text/plain; charset=UTF-8</value>  
+                        </list>  
+                    </property>  
+                </bean>  
+            </list>  
+        </property>  
+    </bean>    
+
+    
+    
+    <!-- configure SimpleMappingExceptionResolver，异常处理 -->
+	<!-- <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	    <property name="exceptionMappings">
+	        <props>
+	            <prop key="java.lang.ArithmeticException">error</prop>
+	        </props>
+	    </property>
+	</bean> -->
+     
+    <!-- configure the InternalResourceViewResolver -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+            id="internalResourceViewResolver">
+        <!-- 前缀 -->
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <!-- 后缀 -->
+        <property name="suffix" value=".jsp" />
+    </bean>
+    
+    <!-- upload settings -->
+	<bean id="multipartResolver"  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <property name="maxUploadSize" value="102400000"></property>
+	</bean>
+	
+	
+	<!-- interceptor setting -->
+	<!-- <mvc:interceptors>
+	    <mvc:interceptor>
+	        <mvc:mapping path="/mvc/**"/>
+	        <bean class="test.SpringMVC.Interceptor.MyInterceptor"></bean>
+	    </mvc:interceptor>        
+	</mvc:interceptors> -->
+	
+	<!-- WebMvcConfigurerAdapte或者@CrossOrigin注解 -->
+	<!-- <mvc:cors>
+		<mvc:mapping path="/api/**"
+			allowed-origins="http://domain1.com, http://domain2.com"
+			allowed-methods="GET, PUT"
+			allowed-headers="header1, header2, header3"
+			exposed-headers="header1, header2" allow-credentials="false"
+			max-age="123" />
+		<mvc:mapping path="/resources/**"
+			allowed-origins="http://domain1.com" />
+	</mvc:cors> -->
+</beans>
