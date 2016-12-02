@@ -12,6 +12,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -31,6 +32,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 @ContextHierarchy(
 		@ContextConfiguration("classpath:example2/app-config-web.xml")
 		)
+@TestPropertySource(properties="port:80")
 public class WacTests extends AppConfig{
 	@Autowired
     WebApplicationContext wac; // cached
@@ -104,13 +106,13 @@ public class WacTests extends AppConfig{
     	.andExpect(MockMvcResultMatchers.jsonPath("$[0].userName").value("admin"));*/
     }
     
-    /*@Test
+    @Test
     public void testHtmlUnit(){
     	try {
-			HtmlPage createMsgFormPage = webClient.getPage("http://localhost/preSave");
-			System.out.println(createMsgFormPage.asXml());
+			HtmlPage createMsgFormPage = webClient.getPage("https://www.baidu.com");
+			System.out.println(createMsgFormPage.asText());
 		} catch (FailingHttpStatusCodeException | IOException e) {
 			e.printStackTrace();
 		}
-    }*/
+    }
 }
