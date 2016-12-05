@@ -1,9 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:c="http://www.springframework.org/schema/c"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 			http://www.springframework.org/schema/context
 			http://www.springframework.org/schema/context/spring-context-4.2.xsd">
-	<bean id="springBean" class="org.bear.bookstore.test.xml.MySpringBean"></bean>
+	<bean id="springBean11" class="org.bear.bookstore.test.xml.MySpringBean"></bean>
+	
+	<bean id="pro" abstract="true">
+		<property name="pro">
+			<props merge="true">
+				<prop key="a">a</prop>
+				<prop key="b">b</prop>
+				<prop key="c">c</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="springBean12" class="org.bear.bookstore.test.xml.MySpringBean" parent="pro">
+		<property name="msg" value="springBean12"/>
+		<property name="i" value="12"/>
+		<property name="myBean" ref="springBean2" />
+		<property name="pro">
+			<props merge="true">
+				<prop key="aa">aa</prop>
+				<prop key="bb">bb</prop>
+				<prop key="cc">cc</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="springBean13" class="org.bear.bookstore.test.xml.MySpringBean">
+		<description>spring bean 13 with constructor</description>
+		<meta key="springBean13" value="13"/>
+		<constructor-arg index="0" name="msg" type="java.lang.String" value="springBean13"></constructor-arg>
+		<constructor-arg index="1" name="i" type="int" value="13"></constructor-arg>
+		<constructor-arg index="2" name="myBean" type="org.bear.bookstore.test.xml.MySpringBean2" ref="springBean2"></constructor-arg>
+	</bean>
+	
+	<bean id="springBean14" class="org.bear.bookstore.test.xml.MySpringBean">
+		<qualifier type="org.springframework.beans.factory.annotation.Qualifier" value="springBean2"></qualifier>
+	</bean>
+	
+	<!-- 引用不存在的bean，只有gebean的时候才会验证是否存在，可以用来做插件用 -->
+	<bean id="springBean15" class="org.bear.bookstore.test.xml.MySpringBean">
+		<property name="myBean" ref="aaaa" />
+	</bean>
+	
+	<bean id="springBean16" class="org.bear.bookstore.test.xml.MySpringBean"
+		p:msg="springBean16"
+		p:my-bean-ref="springBean2"
+	/>
+	
+	<bean id="springBean2" class="org.bear.bookstore.test.xml.MySpringBean2" autowire-candidate="false"></bean>
+	
+	<!-- 如果设置为no，则注解@Autowire失效 -->
+	<!-- <bean id="springBean3" class="org.bear.bookstore.test.xml.MySpringBean3" autowire="no"></bean> -->
+	<!-- @Autowire注解注入MySpringBean2，但是2的属性autowire-candidate="false"，所以依赖注入失败 -->
+	<bean id="springBean3" class="org.bear.bookstore.test.xml.MySpringBean3"></bean>
+	
+	
+	
+	<bean id="myValueCalculator" class="org.bear.bookstore.test.methodreplace.MyValueCalculator">
+	    <!-- arbitrary method replacement -->
+	    <replaced-method name="computeValue" replacer="replacementComputeValue">
+	        <arg-type>String</arg-type>
+	        <arg-type>Str</arg-type>
+	    </replaced-method>
+	    <replaced-method name="computeValue1" replacer="replacementComputeValue">
+	        <arg-type>String</arg-type>
+	        <arg-type>Str</arg-type>
+	    </replaced-method>
+	    <replaced-method name="computeValue3" replacer="replacementComputeValue">
+	        <arg-type>String</arg-type>
+	        <arg-type>Str</arg-type>
+	    </replaced-method>
+	</bean>
+	
+	<bean id="replacementComputeValue" class="org.bear.bookstore.test.methodreplace.ReplacementComputeValue"/>
 </beans>

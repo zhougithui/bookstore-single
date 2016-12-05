@@ -16,23 +16,15 @@
 		</encoder>
 	</appender>
 	
-	<appender name ="async_consoleLog" class= "ch.qos.logback.classic.AsyncAppender">  
+	<!-- <appender name ="async_consoleLog" class= "ch.qos.logback.classic.AsyncAppender">  
 		<discardingThreshold >0</discardingThreshold>  
 		<queueSize>256</queueSize>  
 		<appender-ref ref ="consoleLog"/>  
-	</appender>
+	</appender> -->
 	
-	<logger name="com.alibaba.dubbo">
-		<appender-ref ref="consoleLog"/> 
-	</logger>
-	
-	<logger name="org.springframework" level="${LOG_LEVEL}">
-		<appender-ref ref="consoleLog"/> 
-	</logger>
-
 	<!-- 根logger的设置-->
 	<!-- 控制台日志监测到info级别 -->
 	<root level="${LOG_LEVEL}">
-		<appender-ref ref="async_consoleLog" />  
+		<appender-ref ref="consoleLog" />  
 	</root>
 </configuration>

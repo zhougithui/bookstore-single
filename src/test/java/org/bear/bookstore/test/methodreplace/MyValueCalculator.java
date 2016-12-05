@@ -4,20 +4,17 @@ public class MyValueCalculator {
 
     public String computeValue(String input, String str1) {
     	// some real code...
-    	System.out.println(111);
-		return input;
+		return "computeValue";
     }
     
     public static String computeValue1(String input, String str1) {
     	// some real code...
-    	System.out.println(222);
-		return input;
+		return "computeValue1";
     }
 
     public final String computeValue3(String input, String str1) {
     	// some real code...
-    	System.out.println(333);
-		return input;
+		return "computeValue3";
     }
 
 }
