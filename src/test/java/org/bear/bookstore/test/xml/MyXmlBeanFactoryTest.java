@@ -1,7 +1,12 @@
 package org.bear.bookstore.test.xml;
 
+import org.bear.bookstore.test.xml.factory.Car;
+import org.bear.bookstore.test.xml.factory.MyFactoryBean;
 import org.bear.bookstore.test.xml.lookup.LookUpTest;
 import org.bear.bookstore.test.xml.replace.MyValueCalculator;
+import org.bear.bookstore.test.xml.simple.MySpringBean;
+import org.bear.bookstore.test.xml.simple.MySpringBean3;
+import org.bear.bookstore.test.xml.simple.MySpringBean4;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -155,6 +160,15 @@ public class MyXmlBeanFactoryTest {
 		System.out.println("^^^^^^^^^^^^^^lookup^^^^^^^^^^^^^^^^^^^");
 		LookUpTest lookup = beanFactory.getBean(LookUpTest.class);
 		lookup.showme();
+		
+		System.out.println("^^^^^^^^^^^^^^factorybean^^^^^^^^^^^^^^^^^^^");
+		Car car = beanFactory.getBean(Car.class);
+		System.out.println(car.getName());
+		/**
+		 * 获取factoryBean本身
+		 */
+		MyFactoryBean carFactory = beanFactory.getBean("&car",MyFactoryBean.class);
+		System.out.println(carFactory.getObjectType().getName());
 		
 		/**
 		 * 销毁定义了销毁方法的并且为单例的bean

@@ -1,4 +1,4 @@
-package org.bear.bookstore.test.xml;
+package org.bear.bookstore.test.xml.simple;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

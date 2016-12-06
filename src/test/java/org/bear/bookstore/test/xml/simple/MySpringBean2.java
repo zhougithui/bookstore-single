@@ -1,4 +1,4 @@
-package org.bear.bookstore.test.xml;
+package org.bear.bookstore.test.xml.simple;
 
 public class MySpringBean2 {
 
