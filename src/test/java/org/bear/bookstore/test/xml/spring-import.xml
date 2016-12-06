@@ -11,7 +11,7 @@
 	<!-- 
 		方法替换，如果是final或者static方法，是不能够替换的，所以只有computeValue被替换成新的方法
 	 -->
-	<bean id="myValueCalculator" class="org.bear.bookstore.test.methodreplace.MyValueCalculator">
+	<bean id="myValueCalculator" class="org.bear.bookstore.test.xml.replace.MyValueCalculator">
 	    <!-- arbitrary method replacement -->
 	    <replaced-method name="computeValue" replacer="replacementComputeValue">
 	        <arg-type>String</arg-type>
@@ -27,5 +27,13 @@
 	    </replaced-method>
 	</bean>
 	
-	<bean id="replacementComputeValue" class="org.bear.bookstore.test.methodreplace.ReplacementComputeValue"/>
+	<bean id="replacementComputeValue" class="org.bear.bookstore.test.xml.replace.ReplacementComputeValue"/>
+	
+	
+	<bean id="lookup" class="org.bear.bookstore.test.xml.lookup.LookUpTest">
+		<lookup-method name="getUser" bean="teacher"/>	
+	</bean>
+	
+	<bean id="teacher" class="org.bear.bookstore.test.xml.lookup.Teacher"></bean>
+	<bean id="student" class="org.bear.bookstore.test.xml.lookup.Student"></bean>
 </beans>

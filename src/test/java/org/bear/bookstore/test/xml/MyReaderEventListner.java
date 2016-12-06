@@ -15,7 +15,7 @@ public class MyReaderEventListner implements ReaderEventListener {
 
 	@Override
 	public void defaultsRegistered(DefaultsDefinition defaultsDefinition) {
-		log.error(JSON.toJSONString(defaultsDefinition));
+		//log.error(JSON.toJSONString(defaultsDefinition));
 	}
 
 	@Override
@@ -28,12 +28,12 @@ public class MyReaderEventListner implements ReaderEventListener {
 
 	@Override
 	public void aliasRegistered(AliasDefinition aliasDefinition) {
-		log.error(JSON.toJSONString(aliasDefinition));
+		//log.error(JSON.toJSONString(aliasDefinition));
 	}
 
 	@Override
 	public void importProcessed(ImportDefinition importDefinition) {
-		log.error(JSON.toJSONString(importDefinition));
+		//log.error(JSON.toJSONString(importDefinition));
 	}
 
 }

@@ -12,10 +12,9 @@
 			default-autowire="default"
 			default-destroy-method="destroy"
 			default-init-method="init"
-			default-lazy-init="default"
+			default-lazy-init="false"
 			default-merge="true"
 			profile="p1,!p2">
-			
 	<!-- 
 		各个参数详解
 		abstract="false" 
@@ -43,7 +42,7 @@
 		init-method="init"
 			bean的创建和初始化方法，相当于new完后调用实例的init方法，销毁时调用实例的destroy方法
 		lazy-init="default"
-			懒加载策略
+			懒加载策略  这个在AbstractApplicationContext的refresh方法中实现
 		name="springBean101,springBean102,springBean103"
 			如果id没有指定，spring会选择name中的一个作为beanName，其他的都作为alias，否则name跟aliase作用一样
 		scope="singleton"
@@ -65,7 +64,9 @@
 			name="springBean101,springBean102,springBean103"
 			scope="singleton"
 			primary="true"
-		></bean>
+		>
+		<property name="msg" value="springBean10" />
+	</bean>
 	<alias name="springBean104" alias="springBean1041,springBean1042"/>
 	<bean id="springBean21" class="org.bear.bookstore.test.xml.MySpringBean2" autowire-candidate="false"></bean>
 	
@@ -96,7 +97,6 @@
 			</props>
 		</property>
 	</bean>
-	<bean id="springBean2" class="org.bear.bookstore.test.xml.MySpringBean2"></bean>
 	
 	<!-- 构造参数注入 -->
 	<bean id="springBean13" class="org.bear.bookstore.test.xml.MySpringBean">
@@ -104,7 +104,7 @@
 		<meta key="springBean13" value="13"/>
 		<constructor-arg index="0" name="msg" type="java.lang.String" value="springBean13"></constructor-arg>
 		<constructor-arg index="1" name="i" type="int" value="13"></constructor-arg>
-		<constructor-arg index="2" name="myBean" type="org.bear.bookstore.test.xml.MySpringBean2" ref="springBean2"></constructor-arg>
+		<constructor-arg index="2" name="myBean" type="org.bear.bookstore.test.xml.MySpringBean2" ref="springBean21"></constructor-arg>
 	</bean>
 	
 	<!-- 
@@ -128,15 +128,50 @@
 	</bean>
 	
 	<!-- 
-		引用不存在的bean，只有gebean的时候才会验证是否存在，可以用来做插件用
+		引用不存在的bean，只有gebean的时候才会验证是否存在，可以用来做插件用，比如说定义一个接口，插件实现接口，实例化交给spring管理就可以使用
 			1、首先spring会解决依赖的问题，抛出NoSuchBeanDefinitionException: No bean named 'notExistBean' available 
 			2、如果1没有问题，则解决属性注入的问题，抛出Bean property 'notExistProperty' is not writable or has an invalid setter method. 
 			Does the parameter type of the setter match the return type of the getter?
 	-->
 	<bean id="springBean15" class="org.bear.bookstore.test.xml.MySpringBean">
-		<property name="notExistProperty" value="notExistBean" />
+		<!-- <property name="notExistProperty" value="notExistBean" /> -->
 		<property name="myBean" ref="notExistBean" />
 	</bean>
+	
+	<!-- 
+		该 BeanPostProcessor 将自动对标注 @Autowired 的 Bean 进行注入 
+		如果没有这个则不可以通过@Autowired自动注入bean，这个也是消除setter方法的一个方式
+	-->   
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/> 
+	<!-- 
+		由于默认的default-autowire-candidates设置为Service，Dao才能注入，所有通过下面方式注入是失败的
+		除非有autowire-candidates为true的MySpringBean2
+		@Autowired
+		private MySpringBean2 bean;
+	 -->
+	<bean id="springBean3" class="org.bear.bookstore.test.xml.MySpringBean3"></bean>
+	<!-- 
+		当MySpringBean3存在setter方法的时候
+		byName：spring通过getBean指定beanName获取bean对象赋值给当前对象
+		byType：会遍历beanFactory中的beanDefinition，找到对应类型的bean，挑选出候选人，如果候选人存在多个，则从中挑选出一个，这个就和primary属性有关了，如果没有优先级则抛出异常
+	 -->
+	<bean id="springBean31" class="org.bear.bookstore.test.xml.MySpringBean3" autowire="byName"></bean>
+	<bean id="springBean32" class="org.bear.bookstore.test.xml.MySpringBean3" autowire="byType"></bean>
+	
+	<bean id="springBean2" class="org.bear.bookstore.test.xml.MySpringBean2" autowire-candidate="true"></bean>
+	
+	<!-- 
+		annotation-config：
+			相当于驱动，将ContextAnnotationAutowireCandidateResolver
+			注入进defaultListableBeanFactory，让beanFactory识别@Value等注解
+			如果设置了<context:component-scan base-package=""></context:component-scan>
+			则annotation-config可以不配置
+		property-placeholder：加载配置文件，读取配置文件属性，将EmbeddedValueResolver注入beanFactory中
+		以上两者配置使得${xxx}生效
+	 -->
+	<context:annotation-config></context:annotation-config>
+	<context:property-placeholder location="classpath:org/bear/bookstore/test/xml/springbean.properties"/>
+	<bean id="springBean4" class="org.bear.bookstore.test.xml.MySpringBean4"></bean>
 	
 	<import resource="spring-import.xml"/>
 </beans>

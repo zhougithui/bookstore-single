@@ -1,14 +1,46 @@
 package org.bear.bookstore.test.xml;
 
+import org.bear.bookstore.test.xml.lookup.LookUpTest;
+import org.bear.bookstore.test.xml.replace.MyValueCalculator;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
+
+import com.alibaba.fastjson.JSON;
 
 public class MyXmlBeanFactoryTest {
 
+	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		/*
+		 * spring中多出用此进行jar包或者版本的标识，判断是否有些功能启用，好进行日志提示
+		 * private static Class<?> javaUtilOptionalClass = null;
+			private static Class<?> javaxInjectProviderClass = null;
+			static {
+				try {
+					javaUtilOptionalClass =
+							ClassUtils.forName("java.util.Optional", DefaultListableBeanFactory.class.getClassLoader());
+				}
+				catch (ClassNotFoundException ex) {
+					// Java 8 not available - Optional references simply not supported then.
+				}
+				try {
+					javaxInjectProviderClass =
+							ClassUtils.forName("javax.inject.Provider", DefaultListableBeanFactory.class.getClassLoader());
+				}
+				catch (ClassNotFoundException ex) {
+					// JSR-330 API not available - Provider interface simply not supported then.
+				}
+			}
+		 */
+		MyDefaultListableBeanFactory beanFactory = new MyDefaultListableBeanFactory();
+		/**
+		 * 环境变量拓展
+		 */
+		beanFactory.setEnvironment(new StandardEnvironment());
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		reader.setProblemReporter(new MyProblenReporter());
 		/**
@@ -16,7 +48,7 @@ public class MyXmlBeanFactoryTest {
 		 */
 		reader.setEventListener(new MyReaderEventListner());
 		reader.setSourceExtractor(new MySourceExtractor());
-		//实现在即的xml读取器
+		//实现自己的xml读取器
 		//reader.setDocumentLoader(documentLoader);
 		/**
 		 * xml解析异常处理器
@@ -55,7 +87,7 @@ public class MyXmlBeanFactoryTest {
 			MySpringBean bean15 = beanFactory.getBean("springBean15",MySpringBean.class);
 			System.out.println(bean15.getMsg());
 		} catch (BeansException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		
 		System.out.println("^^^^^^^^^^^^^^springBean16^^^^^^^^^^^^^^^^^^^");
@@ -66,14 +98,67 @@ public class MyXmlBeanFactoryTest {
 		MySpringBean bean17 = beanFactory.getBean("springBean17",MySpringBean.class);
 		System.out.println(bean17.getMsg());
 		
+		System.out.println("^^^^^^^^^^^^^^springBean3^^^^^^^^^^^^^^^^^^^");
+		MySpringBean3 bean31 = beanFactory.getBean("springBean31",MySpringBean3.class);
+		bean31.hello();
+		MySpringBean3 bean32 = beanFactory.getBean("springBean32",MySpringBean3.class);
+		bean32.hello();
+		System.out.println("^^^^^^^^^^^^^^springBean31/32^^^^^^^^^^^^^^^^^^^");
+		/**
+		 * 注册bean的处理器，在bean初始化前后进行bean中AutowiredAnnotation的处理
+		 */
+		beanFactory.addBeanPostProcessor(beanFactory.getBean(AutowiredAnnotationBeanPostProcessor.class));
+		MySpringBean3 bean3 = beanFactory.getBean("springBean3",MySpringBean3.class);
+		bean3.hello();
+		
 		System.out.println("^^^^^^^^^^^^^^myValueCalculator^^^^^^^^^^^^^^^^^^^");
+		/**
+		 * 判断如果存在method覆盖的类，则采用cglib
+		 * AbstractAutowireCapableBeanFactory.instantiateBean(使用的CglibSubclassingInstantiationStrategy)
+		 * 调用CglibSubclassingInstantiationStrategy的instantiate(mbd, beanName, parent)方法
+		 * if (bd.getMethodOverrides().isEmpty()) {
+		 * 	通过反射创建类的实例
+		 * 	return BeanUtils.instantiateClass(constructorToUse);
+		 * }else{
+		 * 	通过cglib创建类的实例
+		 * 	return instantiateWithMethodInjection(bd, beanName, owner);
+		 * }
+		 * 也就是下面这行
+		 * // Must generate CGLIB subclass...
+		 * return new CglibSubclassCreator(bd, owner).instantiate(ctor, args);
+		 */
+		//可以看到LookupOverride和ReplaceOverride都是如此实现的
+		// SPR-10785: set callbacks directly on the instance instead of in the
+		// enhanced class (via the Enhancer) in order to avoid memory leaks.
+		/*Factory factory = (Factory) instance;
+		factory.setCallbacks(new Callback[] {NoOp.INSTANCE,
+				new LookupOverrideMethodInterceptor(this.beanDefinition, this.owner),
+				new ReplaceOverrideMethodInterceptor(this.beanDefinition, this.owner)});
+		return instance;*/
+		
 		MyValueCalculator myValueCalculator = beanFactory.getBean("myValueCalculator",MyValueCalculator.class);
 		System.out.println(myValueCalculator.computeValue("a", "b"));
 		System.out.println(myValueCalculator.computeValue3("a", "b"));
 		System.out.println(myValueCalculator.computeValue1("a", "b"));
 		
+		
+		System.out.println("^^^^^^^^^^^^^^springbean4^^^^^^^^^^^^^^^^^^^");
+		/**
+		 * 加载配置的配置文件，读取文件中的内容
+		 * context包中beanFactory包装类就是这么调用的，等分析后详解
+		 */
+		PropertySourcesPlaceholderConfigurer beanFactoryPost = beanFactory.getBean(PropertySourcesPlaceholderConfigurer.class);
+		beanFactoryPost.postProcessBeanFactory(beanFactory);
+		MySpringBean4 bean4 = beanFactory.getBean(MySpringBean4.class);
+		System.out.println(JSON.toJSON(bean4));
+		
+		System.out.println("^^^^^^^^^^^^^^lookup^^^^^^^^^^^^^^^^^^^");
+		LookUpTest lookup = beanFactory.getBean(LookUpTest.class);
+		lookup.showme();
+		
 		/**
 		 * 销毁定义了销毁方法的并且为单例的bean
+		 * 会将已经初始化的实例进行销毁，调用实例的destroy方法，没有则内部打印日志信息
 		 */
 		beanFactory.destroySingletons();
 	}

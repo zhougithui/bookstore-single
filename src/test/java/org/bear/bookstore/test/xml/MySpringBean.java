@@ -44,11 +44,11 @@ public class MySpringBean {
 	}
 	
 	private void init(){
-		System.out.println("init springbean10");
+		System.out.println("init " + msg);
 	}
 	
 	private void destroy(){
-		System.out.println("destroy springbean10");
+		System.out.println("destroy " + msg);
 	}
 
 }

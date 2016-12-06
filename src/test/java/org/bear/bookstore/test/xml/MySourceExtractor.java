@@ -12,8 +12,8 @@ public class MySourceExtractor implements SourceExtractor {
 
 	@Override
 	public Object extractSource(Object sourceCandidate, Resource definingResource) {
-		log.error(JSON.toJSONString(sourceCandidate));
-		log.error(JSON.toJSONString(definingResource));
+		//log.error(JSON.toJSONString(sourceCandidate));
+		//log.error(JSON.toJSONString(definingResource));
 		return null;
 	}
 

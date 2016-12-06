@@ -17,11 +17,11 @@ public class MyBeanDefinitionDocumentReader extends DefaultBeanDefinitionDocumen
 	
 	@Override
 	protected void preProcessXml(Element root) {
-		log.error(JSON.toJSONString(root));
+		//log.error(JSON.toJSONString(root));
 	}
 	
 	@Override
 	protected void postProcessXml(Element root) {
-		log.error(JSON.toJSONString(root));
+		//log.error(JSON.toJSONString(root));
 	}
 }
