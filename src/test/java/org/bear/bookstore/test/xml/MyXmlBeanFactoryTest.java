@@ -1,6 +1,6 @@
 package org.bear.bookstore.test.xml;
 
-import org.bear.bookstore.test.methodreplace.MyValueCalculator;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.ClassPathResource;
@@ -32,12 +32,39 @@ public class MyXmlBeanFactoryTest {
 		int beanDefinitionCount = reader.loadBeanDefinitions(new ClassPathResource("spring-app.xml", MyXmlBeanFactoryTest.class));
 		System.out.println("beanDefinition count=" + beanDefinitionCount);
 		
-		System.out.println("^^^^^^^^^^^^^^springBean12^^^^^^^^^^^^^^^^^^^");
-		MySpringBean bean = beanFactory.getBean("springBean12",MySpringBean.class);
-		bean.hello();
+		System.out.println("^^^^^^^^^^^^^^springBean10^^^^^^^^^^^^^^^^^^^");
+		MySpringBean bean = beanFactory.getBean(MySpringBean.class);
+		System.out.println(bean.getMsg());
 		
-		System.out.println(bean.getPro().get("a"));
-		System.out.println(bean.getPro().get("aa"));
+		System.out.println("^^^^^^^^^^^^^^springBean12^^^^^^^^^^^^^^^^^^^");
+		MySpringBean bean12 = beanFactory.getBean("springBean12",MySpringBean.class);
+		System.out.println(bean12.getPro().get("a"));
+		System.out.println(bean12.getPro().get("aa"));
+		System.out.println(bean12.getMsg());
+		
+		System.out.println("^^^^^^^^^^^^^^springBean13^^^^^^^^^^^^^^^^^^^");
+		MySpringBean bean13 = beanFactory.getBean("springBean13",MySpringBean.class);
+		System.out.println(bean13.getMsg());
+		
+		System.out.println("^^^^^^^^^^^^^^springBean14^^^^^^^^^^^^^^^^^^^");
+		MySpringBean bean14 = beanFactory.getBean("springBean14",MySpringBean.class);
+		System.out.println(bean14.getMsg());
+		
+		System.out.println("^^^^^^^^^^^^^^springBean15^^^^^^^^^^^^^^^^^^^");
+		try {
+			MySpringBean bean15 = beanFactory.getBean("springBean15",MySpringBean.class);
+			System.out.println(bean15.getMsg());
+		} catch (BeansException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("^^^^^^^^^^^^^^springBean16^^^^^^^^^^^^^^^^^^^");
+		MySpringBean bean16 = beanFactory.getBean("springBean16",MySpringBean.class);
+		System.out.println(bean16.getMsg());
+		
+		System.out.println("^^^^^^^^^^^^^^springBean17^^^^^^^^^^^^^^^^^^^");
+		MySpringBean bean17 = beanFactory.getBean("springBean17",MySpringBean.class);
+		System.out.println(bean17.getMsg());
 		
 		System.out.println("^^^^^^^^^^^^^^myValueCalculator^^^^^^^^^^^^^^^^^^^");
 		MyValueCalculator myValueCalculator = beanFactory.getBean("myValueCalculator",MyValueCalculator.class);
@@ -45,13 +72,10 @@ public class MyXmlBeanFactoryTest {
 		System.out.println(myValueCalculator.computeValue3("a", "b"));
 		System.out.println(myValueCalculator.computeValue1("a", "b"));
 		
-		System.out.println("^^^^^^^^^^^^^^springBean16^^^^^^^^^^^^^^^^^^^");
-		MySpringBean bean16 = beanFactory.getBean("springBean16", MySpringBean.class);
-		bean16.hello2();
-		
-		System.out.println("^^^^^^^^^^^^^^springBean3^^^^^^^^^^^^^^^^^^^");
-		MySpringBean3 bean3 = beanFactory.getBean(MySpringBean3.class);
-		bean3.hello();
+		/**
+		 * 销毁定义了销毁方法的并且为单例的bean
+		 */
+		beanFactory.destroySingletons();
 	}
 
 }

@@ -7,10 +7,75 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 			http://www.springframework.org/schema/context
-			http://www.springframework.org/schema/context/spring-context-4.2.xsd">
-	<bean id="springBean11" class="org.bear.bookstore.test.xml.MySpringBean"></bean>
+			http://www.springframework.org/schema/context/spring-context-4.2.xsd"
+			default-autowire-candidates="*Service*,*Dao*"
+			default-autowire="default"
+			default-destroy-method="destroy"
+			default-init-method="init"
+			default-lazy-init="default"
+			default-merge="true"
+			profile="p1,!p2">
+			
+	<!-- 
+		各个参数详解
+		abstract="false" 
+			true
+				抽象的，只有为true才可以作为继承对象来用，比如说继承此类的属性，进行merge；同时抽象的bean不可以被实例化
+				org.springframework.beans.factory.BeanIsAbstractException: 
+				Error creating bean with name 'springBean10': Bean definition is abstract
+			false
+				默认值
+		autowire-candidate="default" 
+			是够作为@Autowire注入的候选人，如果为no则当有bean通过@Autowire注入此bean时为null
+			如果设置为no，则注解@Autowire失效
+				bean id="springBean3" class="org.bear.bookstore.test.xml.MySpringBean3" autowire="no" bean
+				@Autowire注解注入MySpringBean2，但是2的属性autowire-candidate="false"，所以依赖注入失败
+				bean id="springBean3" class="org.bear.bookstore.test.xml.MySpringBean3" bean
+		autowire="default"
+			- default
+			- no 不通过注解注入，也就是忽略@Autowire
+			- byName 通过beanName注入
+			- byType 通过className注入
+			- constructor 构造参数注入
+		depends-on="springBean2"
+			bean依赖管理，可以有多个
+		destroy-method="destroy"
+		init-method="init"
+			bean的创建和初始化方法，相当于new完后调用实例的init方法，销毁时调用实例的destroy方法
+		lazy-init="default"
+			懒加载策略
+		name="springBean101,springBean102,springBean103"
+			如果id没有指定，spring会选择name中的一个作为beanName，其他的都作为alias，否则name跟aliase作用一样
+		scope="singleton"
+			创建实例的规则，
+				singleton：默认是singleton 单例，单例不是说此类的实例只会有一个，而是在spring容器中beanName对应的实例是唯一的
+				prototype：每一次getBean都返回新创建的实例
+				web还有session范围、request范围、application范围
+		primary="true" 
+			如果有多个MySpringBean的候选人，并且存在唯一的一个候选人的primary为true，则选择此作为实例返回
+	 -->
+	<bean id="springBean10" class="org.bear.bookstore.test.xml.MySpringBean"
+			abstract="false" 
+			autowire-candidate="default" 
+			autowire="default"
+			depends-on="springBean21"
+			destroy-method="destroy"
+			init-method="init"
+			lazy-init="default"
+			name="springBean101,springBean102,springBean103"
+			scope="singleton"
+			primary="true"
+		></bean>
+	<alias name="springBean104" alias="springBean1041,springBean1042"/>
+	<bean id="springBean21" class="org.bear.bookstore.test.xml.MySpringBean2" autowire-candidate="false"></bean>
 	
-	<bean id="pro" abstract="true">
+	<!-- 
+		setter注入
+		属性合并，不是所有的属性都能合并的，
+		spring提供了list array map properties set合并处理 
+		均实现了mergeable接口
+	 -->
+	<bean id="pro" abstract="false">
 		<property name="pro">
 			<props merge="true">
 				<prop key="a">a</prop>
@@ -31,7 +96,9 @@
 			</props>
 		</property>
 	</bean>
+	<bean id="springBean2" class="org.bear.bookstore.test.xml.MySpringBean2"></bean>
 	
+	<!-- 构造参数注入 -->
 	<bean id="springBean13" class="org.bear.bookstore.test.xml.MySpringBean">
 		<description>spring bean 13 with constructor</description>
 		<meta key="springBean13" value="13"/>
@@ -40,44 +107,36 @@
 		<constructor-arg index="2" name="myBean" type="org.bear.bookstore.test.xml.MySpringBean2" ref="springBean2"></constructor-arg>
 	</bean>
 	
-	<bean id="springBean14" class="org.bear.bookstore.test.xml.MySpringBean">
-		<qualifier type="org.springframework.beans.factory.annotation.Qualifier" value="springBean2"></qualifier>
-	</bean>
-	
-	<!-- 引用不存在的bean，只有gebean的时候才会验证是否存在，可以用来做插件用 -->
-	<bean id="springBean15" class="org.bear.bookstore.test.xml.MySpringBean">
-		<property name="myBean" ref="aaaa" />
-	</bean>
-	
+	<!-- 
+		spring提供的简化标签，属性标签和构造器标签
+	-->
 	<bean id="springBean16" class="org.bear.bookstore.test.xml.MySpringBean"
 		p:msg="springBean16"
 		p:my-bean-ref="springBean2"
 	/>
 	
-	<bean id="springBean2" class="org.bear.bookstore.test.xml.MySpringBean2" autowire-candidate="false"></bean>
+	<bean id="springBean17" class="org.bear.bookstore.test.xml.MySpringBean"
+		c:msg="springBean17"
+		c:my-bean-ref="springBean2"
+		c:i="17"
+	/>
 	
-	<!-- 如果设置为no，则注解@Autowire失效 -->
-	<!-- <bean id="springBean3" class="org.bear.bookstore.test.xml.MySpringBean3" autowire="no"></bean> -->
-	<!-- @Autowire注解注入MySpringBean2，但是2的属性autowire-candidate="false"，所以依赖注入失败 -->
-	<bean id="springBean3" class="org.bear.bookstore.test.xml.MySpringBean3"></bean>
-	
-	
-	
-	<bean id="myValueCalculator" class="org.bear.bookstore.test.methodreplace.MyValueCalculator">
-	    <!-- arbitrary method replacement -->
-	    <replaced-method name="computeValue" replacer="replacementComputeValue">
-	        <arg-type>String</arg-type>
-	        <arg-type>Str</arg-type>
-	    </replaced-method>
-	    <replaced-method name="computeValue1" replacer="replacementComputeValue">
-	        <arg-type>String</arg-type>
-	        <arg-type>Str</arg-type>
-	    </replaced-method>
-	    <replaced-method name="computeValue3" replacer="replacementComputeValue">
-	        <arg-type>String</arg-type>
-	        <arg-type>Str</arg-type>
-	    </replaced-method>
+	<!-- 多实例指定beanName -->
+	<bean id="springBean14" class="org.bear.bookstore.test.xml.MySpringBean">
+		<property name="msg" value="springbean14" />
+		<qualifier type="org.springframework.beans.factory.annotation.Qualifier" value="springBean2"></qualifier>
 	</bean>
 	
-	<bean id="replacementComputeValue" class="org.bear.bookstore.test.methodreplace.ReplacementComputeValue"/>
+	<!-- 
+		引用不存在的bean，只有gebean的时候才会验证是否存在，可以用来做插件用
+			1、首先spring会解决依赖的问题，抛出NoSuchBeanDefinitionException: No bean named 'notExistBean' available 
+			2、如果1没有问题，则解决属性注入的问题，抛出Bean property 'notExistProperty' is not writable or has an invalid setter method. 
+			Does the parameter type of the setter match the return type of the getter?
+	-->
+	<bean id="springBean15" class="org.bear.bookstore.test.xml.MySpringBean">
+		<property name="notExistProperty" value="notExistBean" />
+		<property name="myBean" ref="notExistBean" />
+	</bean>
+	
+	<import resource="spring-import.xml"/>
 </beans>

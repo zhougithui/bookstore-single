@@ -42,5 +42,13 @@ public class MySpringBean {
 	public void hello2() {
 		myBean.hello();
 	}
+	
+	private void init(){
+		System.out.println("init springbean10");
+	}
+	
+	private void destroy(){
+		System.out.println("destroy springbean10");
+	}
 
 }
