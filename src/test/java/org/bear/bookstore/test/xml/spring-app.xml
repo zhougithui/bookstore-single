@@ -109,6 +109,39 @@
 	
 	<!-- 
 		spring提供的简化标签，属性标签和构造器标签
+		如果不是默认的命名空间：http://www.springframework.org/schema/beans
+		则org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.
+			decorateBeanDefinitionIfRequired(Element ele, BeanDefinitionHolder definitionHolder, BeanDefinition containingBd)
+			public BeanDefinitionHolder decorateIfRequired(
+			Node node, BeanDefinitionHolder originalDef, BeanDefinition containingBd) {
+		会对这类标签进行装饰，比如p:会装换成一个PropertyValue等
+
+		String namespaceUri = getNamespaceURI(node);
+		if (!isDefaultNamespace(namespaceUri)) {
+			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
+			if (handler != null) {
+				return handler.decorate(node, originalDef, new ParserContext(this.readerContext, this, containingBd));
+			}
+			else if (namespaceUri != null && namespaceUri.startsWith("http://www.springframework.org/")) {
+				error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", node);
+			}
+			else {
+				// A custom namespace, not to be handled by Spring - maybe "xml:...".
+				if (logger.isDebugEnabled()) {
+					logger.debug("No Spring NamespaceHandler found for XML schema namespace [" + namespaceUri + "]");
+				}
+			}
+		}
+		return originalDef;
+		
+		代码如下，对ref和普通pro的处理，对于p:my-bean-ref，会首先获取my-bean，然后变脸my-bean，如果存在-，则下一个字母装换成大写，然后转成myBean，与p:myBean等价
+		if (propertyName.endsWith(REF_SUFFIX)) {
+			propertyName = propertyName.substring(0, propertyName.length() - REF_SUFFIX.length());
+			pvs.add(Conventions.attributeNameToPropertyName(propertyName), new RuntimeBeanReference(propertyValue));
+		}
+		else {
+			pvs.add(Conventions.attributeNameToPropertyName(propertyName), propertyValue);
+		}
 	-->
 	<bean id="springBean16" class="org.bear.bookstore.test.xml.simple.MySpringBean"
 		p:msg="springBean16"
