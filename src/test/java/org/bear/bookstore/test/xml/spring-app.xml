@@ -85,6 +85,13 @@
 			</props>
 		</property>
 	</bean>
+	<!-- 
+		当获取bean的时候，也就是getBean方法执行后，进行属性填充是populate时
+		BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
+		Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
+		会根据parent属性进行definition属性复制，完成后进行
+		bw.setPropertyValues(new MutablePropertyValues(deepCopy));
+	 -->
 	<bean id="springBean12" class="org.bear.bookstore.test.xml.simple.MySpringBean" parent="pro">
 		<property name="msg" value="springBean12"/>
 		<property name="i" value="12"/>
