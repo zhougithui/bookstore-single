@@ -1,5 +1,8 @@
 package org.bear.bookstore.test.xml;
 
+import org.bear.bookstore.test.xml.cycle.CycleOtherBeanA;
+import org.bear.bookstore.test.xml.cycle.CycleOtherBeanB;
+import org.bear.bookstore.test.xml.cycle.CycleSelfBean;
 import org.bear.bookstore.test.xml.factory.Car;
 import org.bear.bookstore.test.xml.factory.MyFactoryBean;
 import org.bear.bookstore.test.xml.lookup.LookUpTest;
@@ -169,6 +172,24 @@ public class MyXmlBeanFactoryTest {
 		 */
 		MyFactoryBean carFactory = beanFactory.getBean("&car",MyFactoryBean.class);
 		System.out.println(carFactory.getObjectType().getName());
+		
+		
+		System.out.println("^^^^^^^^^^^^^^cycle self^^^^^^^^^^^^^^^^^^^");
+		try {
+			CycleSelfBean self = beanFactory.getBean(CycleSelfBean.class);
+			self.hello();
+		} catch (BeansException e) {
+			e.printStackTrace();
+		}
+		System.out.println("^^^^^^^^^^^^^^cycle other^^^^^^^^^^^^^^^^^^^");
+		try {
+			CycleOtherBeanA othera = beanFactory.getBean(CycleOtherBeanA.class);
+			CycleOtherBeanB otherb = beanFactory.getBean(CycleOtherBeanB.class);
+			othera.hello();
+			otherb.hello();
+		} catch (BeansException e) {
+			e.printStackTrace();
+		}
 		
 		/**
 		 * 销毁定义了销毁方法的并且为单例的bean

@@ -176,5 +176,39 @@
 	
 	<bean id="car" class="org.bear.bookstore.test.xml.factory.MyFactoryBean" p:name="factoryCar"></bean>
 	
+	<!-- 
+		自己引用自己
+			如果是构造器注入也是不行的 getBean调用后，AbstractBeanFactory.doGetBean方法中有这么一段
+				//Mark the specified bean as already created (or about to be created). 
+				//This allows the bean factory to optimize its caching for repeated creation of the specified bean.
+				markBeanAsCreated(beanName);
+				DefaultSingletonBeanRegistry.singletonsCurrentlyInCreation中增加一条数据解决循环依赖问题
+				如果构造函数注入则实例化期间就会出现如下异常
+				Caused by: org.springframework.beans.factory.BeanCurrentlyInCreationException: 
+				Error creating bean with name 'self': Requested bean is currently in creation: 
+				Is there an unresolvable circular reference?
+			如果直接用@autowire或通过setter注入是可以的，并且是同一个对象
+				Autowired annotation is not supported on static fields
+	 -->
+	<!-- <bean id="self" class="org.bear.bookstore.test.xml.cycle.CycleSelfBean" 
+		p:self1-ref="self" 
+		c:self-ref="self" -->
+	<bean id="self" class="org.bear.bookstore.test.xml.cycle.CycleSelfBean" autowire-candidate="true"
+		p:self1-ref="self" 
+	></bean>
+	
+	<!-- 
+		两个bean相互引用 
+			如果是构造器注入是不行的，原因跟自己引用自己一样
+			直接通过@autowire或通过setter注入是可以的，并且是同一个对象
+	-->
+	<!-- <bean id="otherA" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanA" p:other2-ref="otherB" 
+		c:other-ref="otherB" -->
+	<bean id="otherA" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanA" p:other2-ref="otherB" autowire-candidate="true"
+	></bean>
+	<!-- <bean id="otherB" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanB" p:other2-ref="otherA" 
+		c:other-ref="otherA" -->
+	<bean id="otherB" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanB" p:other2-ref="otherA" autowire-candidate="true"
+	></bean>
 	<import resource="spring-import.xml"/>
 </beans>
