@@ -12,7 +12,7 @@
 			default-autowire="default"
 			default-destroy-method="destroy"
 			default-init-method="init"
-			default-lazy-init="false"
+			default-lazy-init="true"
 			default-merge="true"
 			profile="p1,!p2">
 	<!-- 
@@ -76,7 +76,7 @@
 		spring提供了list array map properties set合并处理 
 		均实现了mergeable接口
 	 -->
-	<bean id="pro" abstract="false">
+	<bean id="pro" abstract="true">
 		<property name="pro">
 			<props merge="true">
 				<prop key="a">a</prop>
