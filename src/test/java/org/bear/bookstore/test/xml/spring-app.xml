@@ -61,13 +61,15 @@
 			destroy-method="destroy"
 			init-method="init"
 			lazy-init="default"
-			name="springBean101,springBean102,springBean103"
+			name="springBean101,springBean102,springBean103,springBean104,springBean105"
 			scope="singleton"
 			primary="true"
 		>
 		<property name="msg" value="springBean10" />
 	</bean>
+	<alias name="springBean103" alias="springBean1031,springBean1032"/>
 	<alias name="springBean104" alias="springBean1041,springBean1042"/>
+	<alias name="springBean105" alias="springBean1051,springBean1052"/>
 	<bean id="springBean21" class="org.bear.bookstore.test.xml.simple.MySpringBean2" autowire-candidate="false"></bean>
 	
 	<!-- 
@@ -250,5 +252,9 @@
 		c:other-ref="otherA" -->
 	<bean id="otherB" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanB" p:other2-ref="otherA" autowire-candidate="true"
 	></bean>
+
+	<bean id="springBean5" class="org.bear.bookstore.test.xml.simple.MySpringBean5"></bean>
+	<bean id="springBean6" class="org.bear.bookstore.test.xml.simple.SpringBean6FactoryBean"></bean>
+	
 	<import resource="spring-import.xml"/>
 </beans>

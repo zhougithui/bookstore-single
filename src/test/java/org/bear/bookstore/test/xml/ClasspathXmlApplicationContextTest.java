@@ -10,6 +10,7 @@ import org.bear.bookstore.test.xml.replace.MyValueCalculator;
 import org.bear.bookstore.test.xml.simple.MySpringBean;
 import org.bear.bookstore.test.xml.simple.MySpringBean3;
 import org.bear.bookstore.test.xml.simple.MySpringBean4;
+import org.bear.bookstore.test.xml.simple.MySpringBean5;
 import org.springframework.beans.BeansException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

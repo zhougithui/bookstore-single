@@ -1,5 +1,9 @@
 package org.bear.bookstore.test.xml;
 
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.bear.bookstore.test.xml.cycle.CycleOtherBeanA;
 import org.bear.bookstore.test.xml.cycle.CycleOtherBeanB;
 import org.bear.bookstore.test.xml.cycle.CycleSelfBean;
@@ -7,22 +11,26 @@ import org.bear.bookstore.test.xml.factory.Car;
 import org.bear.bookstore.test.xml.factory.MyFactoryBean;
 import org.bear.bookstore.test.xml.lookup.LookUpTest;
 import org.bear.bookstore.test.xml.replace.MyValueCalculator;
+import org.bear.bookstore.test.xml.simple.IMySpringBean;
 import org.bear.bookstore.test.xml.simple.MySpringBean;
 import org.bear.bookstore.test.xml.simple.MySpringBean3;
 import org.bear.bookstore.test.xml.simple.MySpringBean4;
+import org.bear.bookstore.test.xml.simple.MySpringBean5;
+import org.bear.bookstore.test.xml.simple.MySpringBean6;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 
 public class MyXmlBeanFactoryTest {
 
 	@SuppressWarnings("static-access")
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		/*
 		 * spring中多出用此进行jar包或者版本的标识，判断是否有些功能启用，好进行日志提示
 		 * private static Class<?> javaUtilOptionalClass = null;
@@ -190,6 +198,18 @@ public class MyXmlBeanFactoryTest {
 		} catch (BeansException e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println("别名的别名的别名测试");
+		System.out.println(JSON.toJSON(beanFactory.getAliases("springBean10")));
+		
+		System.out.println("^^^^^^^^^^^imyspringbean5^^^^^^^^^^^^^^^^^");
+		System.out.println("imyspringbean5 class " + beanFactory.getType("springBean5"));
+		System.out.println(JSON.toJSON(beanFactory.getBeanNamesForAnnotation(Service.class)));
+		System.out.println(JSON.toJSON(beanFactory.findAnnotationOnBean("springBean5", Service.class).getClass()));
+		System.out.println(JSON.toJSON(beanFactory.findAnnotationOnBean("springBean4", Service.class).getClass()));
+		
+		System.out.println("^^^^^^^^^^^myspringbean6^^^^^^^^^^^^^^^^^");
+		System.out.println(JSON.toJSON(beanFactory.getBeanNamesForType(MySpringBean6.class, true, false)));
 		
 		/**
 		 * 销毁定义了销毁方法的并且为单例的bean
