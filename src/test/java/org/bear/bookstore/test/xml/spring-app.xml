@@ -1,9 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:c="http://www.springframework.org/schema/c"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 			http://www.springframework.org/schema/context
-			http://www.springframework.org/schema/context/spring-context-4.2.xsd">
-	<bean id="springBean" class="org.bear.bookstore.test.xml.MySpringBean"></bean>
+			http://www.springframework.org/schema/context/spring-context-4.2.xsd"
+			default-autowire-candidates="*Service*,*Dao*"
+			default-autowire="default"
+			default-destroy-method="destroy"
+			default-init-method="init"
+			default-lazy-init="true"
+			default-merge="true"
+			profile="p1,!p2">
+	<!-- 
+		各个参数详解
+		abstract="false" 
+			true
+				抽象的，只有为true才可以作为继承对象来用，比如说继承此类的属性，进行merge；同时抽象的bean不可以被实例化
+				org.springframework.beans.factory.BeanIsAbstractException: 
+				Error creating bean with name 'springBean10': Bean definition is abstract
+			false
+				默认值
+		autowire-candidate="default" 
+			是够作为@Autowire注入的候选人，如果为no则当有bean通过@Autowire注入此bean时为null
+			如果设置为no，则注解@Autowire失效
+				bean id="springBean3" class="org.bear.bookstore.test.xml.simple.MySpringBean3" autowire="no" bean
+				@Autowire注解注入MySpringBean2，但是2的属性autowire-candidate="false"，所以依赖注入失败
+				bean id="springBean3" class="org.bear.bookstore.test.xml.simple.MySpringBean3" bean
+		autowire="default"
+			- default
+			- no 不通过注解注入，也就是忽略@Autowire
+			- byName 通过beanName注入
+			- byType 通过className注入
+			- constructor 构造参数注入
+		depends-on="springBean2"
+			bean依赖管理，可以有多个
+		destroy-method="destroy"
+		init-method="init"
+			bean的创建和初始化方法，相当于new完后调用实例的init方法，销毁时调用实例的destroy方法
+		lazy-init="default"
+			懒加载策略  这个在AbstractApplicationContext的refresh方法中实现
+		name="springBean101,springBean102,springBean103"
+			如果id没有指定，spring会选择name中的一个作为beanName，其他的都作为alias，否则name跟aliase作用一样
+		scope="singleton"
+			创建实例的规则，
+				singleton：默认是singleton 单例，单例不是说此类的实例只会有一个，而是在spring容器中beanName对应的实例是唯一的
+				prototype：每一次getBean都返回新创建的实例
+				web还有session范围、request范围、application范围
+		primary="true" 
+			如果有多个MySpringBean的候选人，并且存在唯一的一个候选人的primary为true，则选择此作为实例返回
+	 -->
+	<bean id="springBean10" class="org.bear.bookstore.test.xml.simple.MySpringBean"
+			abstract="false" 
+			autowire-candidate="default" 
+			autowire="default"
+			depends-on="springBean21"
+			destroy-method="destroy"
+			init-method="init"
+			lazy-init="default"
+			name="springBean101,springBean102,springBean103,springBean104,springBean105"
+			scope="singleton"
+			primary="true"
+		>
+		<property name="msg" value="springBean10" />
+	</bean>
+	<alias name="springBean103" alias="springBean1031,springBean1032"/>
+	<alias name="springBean104" alias="springBean1041,springBean1042"/>
+	<alias name="springBean105" alias="springBean1051,springBean1052"/>
+	<bean id="springBean21" class="org.bear.bookstore.test.xml.simple.MySpringBean2" autowire-candidate="false"></bean>
+	
+	<!-- 
+		setter注入
+		属性合并，不是所有的属性都能合并的，
+		spring提供了list array map properties set合并处理 
+		均实现了mergeable接口
+	 -->
+	<bean id="pro" abstract="true">
+		<property name="pro">
+			<props merge="true">
+				<prop key="a">a</prop>
+				<prop key="b">b</prop>
+				<prop key="c">c</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- 
+		当获取bean的时候，也就是getBean方法执行后，进行属性填充是populate时
+		BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
+		Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
+		会根据parent属性进行definition属性复制，完成后进行
+		bw.setPropertyValues(new MutablePropertyValues(deepCopy));
+	 -->
+	<bean id="springBean12" class="org.bear.bookstore.test.xml.simple.MySpringBean" parent="pro">
+		<property name="msg" value="springBean12"/>
+		<property name="i" value="12"/>
+		<property name="myBean" ref="springBean2" />
+		<property name="pro">
+			<props merge="true">
+				<prop key="aa">aa</prop>
+				<prop key="bb">bb</prop>
+				<prop key="cc">cc</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- 构造参数注入 -->
+	<bean id="springBean13" class="org.bear.bookstore.test.xml.simple.MySpringBean">
+		<description>spring bean 13 with constructor</description>
+		<meta key="springBean13" value="13"/>
+		<constructor-arg index="0" name="msg" type="java.lang.String" value="springBean13"></constructor-arg>
+		<constructor-arg index="1" name="i" type="int" value="13"></constructor-arg>
+		<constructor-arg index="2" name="myBean" type="org.bear.bookstore.test.xml.simple.MySpringBean2" ref="springBean21"></constructor-arg>
+	</bean>
+	
+	<!-- 
+		spring提供的简化标签，属性标签和构造器标签
+		如果不是默认的命名空间：http://www.springframework.org/schema/beans
+		则org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.
+			decorateBeanDefinitionIfRequired(Element ele, BeanDefinitionHolder definitionHolder, BeanDefinition containingBd)
+			public BeanDefinitionHolder decorateIfRequired(
+			Node node, BeanDefinitionHolder originalDef, BeanDefinition containingBd) {
+		会对这类标签进行装饰，比如p:会装换成一个PropertyValue等
+
+		String namespaceUri = getNamespaceURI(node);
+		if (!isDefaultNamespace(namespaceUri)) {
+			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
+			if (handler != null) {
+				return handler.decorate(node, originalDef, new ParserContext(this.readerContext, this, containingBd));
+			}
+			else if (namespaceUri != null && namespaceUri.startsWith("http://www.springframework.org/")) {
+				error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", node);
+			}
+			else {
+				// A custom namespace, not to be handled by Spring - maybe "xml:...".
+				if (logger.isDebugEnabled()) {
+					logger.debug("No Spring NamespaceHandler found for XML schema namespace [" + namespaceUri + "]");
+				}
+			}
+		}
+		return originalDef;
+		
+		代码如下，对ref和普通pro的处理，对于p:my-bean-ref，会首先获取my-bean，然后变脸my-bean，如果存在-，则下一个字母装换成大写，然后转成myBean，与p:myBean等价
+		if (propertyName.endsWith(REF_SUFFIX)) {
+			propertyName = propertyName.substring(0, propertyName.length() - REF_SUFFIX.length());
+			pvs.add(Conventions.attributeNameToPropertyName(propertyName), new RuntimeBeanReference(propertyValue));
+		}
+		else {
+			pvs.add(Conventions.attributeNameToPropertyName(propertyName), propertyValue);
+		}
+	-->
+	<bean id="springBean16" class="org.bear.bookstore.test.xml.simple.MySpringBean"
+		p:msg="springBean16"
+		p:my-bean-ref="springBean2"
+	/>
+	
+	<bean id="springBean17" class="org.bear.bookstore.test.xml.simple.MySpringBean"
+		c:msg="springBean17"
+		c:my-bean-ref="springBean2"
+		c:i="17"
+	/>
+	
+	<!-- 多实例指定beanName -->
+	<bean id="springBean14" class="org.bear.bookstore.test.xml.simple.MySpringBean">
+		<property name="msg" value="springbean14" />
+		<qualifier type="org.springframework.beans.factory.annotation.Qualifier" value="springBean2"></qualifier>
+	</bean>
+	
+	<!-- 
+		引用不存在的bean，只有gebean的时候才会验证是否存在，可以用来做插件用，比如说定义一个接口，插件实现接口，实例化交给spring管理就可以使用
+			1、首先spring会解决依赖的问题，抛出NoSuchBeanDefinitionException: No bean named 'notExistBean' available 
+			2、如果1没有问题，则解决属性注入的问题，抛出Bean property 'notExistProperty' is not writable or has an invalid setter method. 
+			Does the parameter type of the setter match the return type of the getter?
+	-->
+	<bean id="springBean15" class="org.bear.bookstore.test.xml.simple.MySpringBean">
+		<!-- <property name="notExistProperty" value="notExistBean" /> -->
+		<property name="myBean" ref="notExistBean" />
+	</bean>
+	
+	<!-- 
+		该 BeanPostProcessor 将自动对标注 @Autowired 的 Bean 进行注入 
+		如果没有这个则不可以通过@Autowired自动注入bean，这个也是消除setter方法的一个方式
+	-->   
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/> 
+	<!-- 
+		由于默认的default-autowire-candidates设置为Service，Dao才能注入，所有通过下面方式注入是失败的
+		除非有autowire-candidates为true的MySpringBean2
+		@Autowired
+		private MySpringBean2 bean;
+	 -->
+	<bean id="springBean3" class="org.bear.bookstore.test.xml.simple.MySpringBean3"></bean>
+	<!-- 
+		当MySpringBean3存在setter方法的时候
+		byName：spring通过getBean指定beanName获取bean对象赋值给当前对象
+		byType：会遍历beanFactory中的beanDefinition，找到对应类型的bean，挑选出候选人，如果候选人存在多个，则从中挑选出一个，这个就和primary属性有关了，如果没有优先级则抛出异常
+	 -->
+	<bean id="springBean31" class="org.bear.bookstore.test.xml.simple.MySpringBean3" autowire="byName"></bean>
+	<bean id="springBean32" class="org.bear.bookstore.test.xml.simple.MySpringBean3" autowire="byType"></bean>
+	
+	<bean id="springBean2" class="org.bear.bookstore.test.xml.simple.MySpringBean2" autowire-candidate="true"></bean>
+	
+	<!-- 
+		annotation-config：
+			相当于驱动，将ContextAnnotationAutowireCandidateResolver
+			注入进defaultListableBeanFactory，让beanFactory识别@Value等注解
+			如果设置了<context:component-scan base-package=""></context:component-scan>
+			则annotation-config可以不配置
+		property-placeholder：加载配置文件，读取配置文件属性，将EmbeddedValueResolver注入beanFactory中
+		以上两者配置使得${xxx}生效
+	 -->
+	<context:annotation-config></context:annotation-config>
+	<context:property-placeholder location="classpath:org/bear/bookstore/test/xml/springbean.properties"/>
+	<bean id="springBean4" class="org.bear.bookstore.test.xml.simple.MySpringBean4"></bean>
+	
+	
+	<bean id="car" class="org.bear.bookstore.test.xml.factory.MyFactoryBean" p:name="factoryCar"></bean>
+	
+	<!-- 
+		自己引用自己
+			如果是构造器注入也是不行的 getBean调用后，AbstractBeanFactory.doGetBean方法中有这么一段
+				//Mark the specified bean as already created (or about to be created). 
+				//This allows the bean factory to optimize its caching for repeated creation of the specified bean.
+				markBeanAsCreated(beanName);
+				DefaultSingletonBeanRegistry.singletonsCurrentlyInCreation中增加一条数据解决循环依赖问题
+				如果构造函数注入则实例化期间就会出现如下异常
+				Caused by: org.springframework.beans.factory.BeanCurrentlyInCreationException: 
+				Error creating bean with name 'self': Requested bean is currently in creation: 
+				Is there an unresolvable circular reference?
+			如果直接用@autowire或通过setter注入是可以的，并且是同一个对象
+				Autowired annotation is not supported on static fields
+	 -->
+	<!-- <bean id="self" class="org.bear.bookstore.test.xml.cycle.CycleSelfBean" 
+		p:self1-ref="self" 
+		c:self-ref="self" -->
+	<bean id="self" class="org.bear.bookstore.test.xml.cycle.CycleSelfBean" autowire-candidate="true"
+		p:self1-ref="self" 
+	></bean>
+	
+	<!-- 
+		两个bean相互引用 
+			如果是构造器注入是不行的，原因跟自己引用自己一样
+			直接通过@autowire或通过setter注入是可以的，并且是同一个对象
+	-->
+	<!-- <bean id="otherA" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanA" p:other2-ref="otherB" 
+		c:other-ref="otherB" -->
+	<bean id="otherA" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanA" p:other2-ref="otherB" autowire-candidate="true"
+	></bean>
+	<!-- <bean id="otherB" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanB" p:other2-ref="otherA" 
+		c:other-ref="otherA" -->
+	<bean id="otherB" class="org.bear.bookstore.test.xml.cycle.CycleOtherBeanB" p:other2-ref="otherA" autowire-candidate="true"
+	></bean>
+
+	<bean id="springBean5" class="org.bear.bookstore.test.xml.simple.MySpringBean5"></bean>
+	<bean id="springBean6" class="org.bear.bookstore.test.xml.simple.SpringBean6FactoryBean"></bean>
+	
+	<import resource="spring-import.xml"/>
 </beans>
