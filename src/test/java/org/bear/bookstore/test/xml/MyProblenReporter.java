@@ -1,5 +1,6 @@
 package org.bear.bookstore.test.xml;
 
+import org.springframework.beans.factory.parsing.BeanDefinitionParsingException;
 import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.beans.factory.parsing.ProblemReporter;
 
@@ -13,16 +14,19 @@ public class MyProblenReporter implements ProblemReporter {
 	@Override
 	public void fatal(Problem problem) {
 		log.error(JSON.toJSONString(problem));
+		throw new BeanDefinitionParsingException(problem);
 	}
 
 	@Override
 	public void error(Problem problem) {
 		log.error(JSON.toJSONString(problem));
+		throw new BeanDefinitionParsingException(problem);
 	}
 
 	@Override
 	public void warning(Problem problem) {
 		log.error(JSON.toJSONString(problem));
+		throw new BeanDefinitionParsingException(problem);
 	}
 
 }

@@ -14,16 +14,19 @@ public class MyErrorHandler implements ErrorHandler {
 	@Override
 	public void warning(SAXParseException exception) throws SAXException {
 		log.error(JSON.toJSONString(exception));
+		throw exception;
 	}
 
 	@Override
 	public void error(SAXParseException exception) throws SAXException {
 		log.error(JSON.toJSONString(exception));
+		throw exception;
 	}
 
 	@Override
 	public void fatalError(SAXParseException exception) throws SAXException {
 		log.error(JSON.toJSONString(exception));
+		throw exception;
 	}
 
 
