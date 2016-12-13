@@ -1,5 +1,6 @@
 package org.bear.bookstore.service.impl;
 
+import org.bear.bookstore.common.annotation.DbKey;
 import org.bear.bookstore.dao.ICustomDao;
 import org.bear.bookstore.domain.Custom;
 import org.bear.bookstore.service.ICustomService;
@@ -15,6 +16,8 @@ public class CustomServiceImpl implements ICustomService {
 	public void insert(Custom cus) {
 		customDao.save(cus);
 	}
+	
+	@DbKey("testDbKey")
 	@Override
 	public Custom select(int id) {
 		return customDao.get(id);

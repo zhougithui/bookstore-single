@@ -60,6 +60,11 @@ public class MyXmlBeanFactoryTest {
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		reader.setProblemReporter(new MyProblenReporter());
 		/**
+		 * 如果设置了classLoader，这样在解析beandefinition的时候就会进行class类型检查，有则抛出异常
+		 * 如果没有设置，则异常延迟到getBean执行时
+		 */
+		reader.setBeanClassLoader(MyXmlBeanFactoryTest.class.getClassLoader());
+		/**
 		 * 读取事件监听器 defauts配置监听、component定义监听、import定义监听、alias定义监听
 		 */
 		reader.setEventListener(new MyReaderEventListner());
