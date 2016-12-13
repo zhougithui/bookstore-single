@@ -312,12 +312,166 @@ SingletonBeanRegistry
 		Object getSingletonMutex()
 		
 DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry
+	说明：
+		注册能够被所有调用者访问的bean，通过beanname，同时能够注册DisposableBean的实例
+		以来的bean通过注册来实现合适的资源释放顺序，此类主要作为beanfactory的基础实现，
+		ConfigurableBeanFactory继承了SingletonBeanRegistry接口
+	字段：
+		//作为一个空的singleton object，主要是concurrentmap不能存null值
+		protected static final Object NULL_OBJECT = new Object()
+		//单例容器
+		private final Map<String, Object> singletonObjects = new ConcurrentHashMap<String, Object>(256)
+		//单例的工厂容器
+		//ObjectFactory，一个类似于FactoryBean的工厂，通过getObject返回对象的实例
+		//earlySingletonObjects和singletonFactories为解决循环引用的主要容器，都是存储原始bean没有完全初始化的信息
+		private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<String, ObjectFactory<?>>(16)
+		private final Map<String, Object> earlySingletonObjects = new HashMap<String, Object>(16)
+		//存储所有注册的singletonbean的beanname
+		private final Set<String> registeredSingletons = new LinkedHashSet<String>(256)
+		//存储所有正常创建中的beanname
+		private final Set<String> singletonsCurrentlyInCreation =
+			Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>(16))
+		private final Set<String> inCreationCheckExclusions =
+			Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>(16))
+		//保存未抛出的异常
+		private Set<Exception> suppressedExceptions
+		//是否正处于释放资源
+		private boolean singletonsCurrentlyInDestruction = false
+		//Disposable的实例
+		private final Map<String, Object> disposableBeans = new LinkedHashMap<String, Object>()
+		//beanname对应的所有别名集合
+		private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<String, Set<String>>(16)
+		//beanname对应的所有依赖bean的集合
+		private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<String, Set<String>>(64)
+		//被依赖的bean，对应依赖它的bean集合
+		private final Map<String, Set<String>> dependenciesForBeanMap = new ConcurrentHashMap<String, Set<String>>(64)
+	方法：
+		实现了SingltonBeanRegistry所有的方法
+		//移除临时缓存，singletonObjects和registeredSingletons中新增记录
+		protected void addSingleton(String beanName, Object singletonObject)
+		//singletonFactories放数据，earlySingletonObjects移除，registeredSingletons新增
+		//解决循环依赖
+		protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory)
+		//首先从singletonObjects获取对象，如果没有同时对象正在创建中，则从earlySingletonObjects
+		//中获取，如果还没有获取，则allowEarlyReference为true时从singletonFactories获取
+		//singletonFactories存入数据，singletonFactories删除
+		//如果均找不到则返回NULL
+		protected Object getSingleton(String beanName, boolean allowEarlyReference)
+		//首先从singletonObjects获取对象，如果没有，同时发现bean在销毁中则抛出异常
+		//判断是否正在创建中，没有则放入singletonsCurrentlyInCreation中
+		//调用ObjectFactory的getObject获得bean实例
+		//如果抛出异常，但是singletonObjects中已经存在，则正常进行，否则继续抛出
+		//最后清除创建状态
+		//将bean放入singletonObjects中和registeredSingletons中，同时从临时缓存中清除
+		public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory)
+		//清除四个map中beanName的信息
+		protected void removeSingleton(String beanName)
+		//设置bean创建状态，inCreationCheckExclusions存储正在创建的bean
+		public void setCurrentlyInCreation(String beanName, boolean inCreation)
+		public boolean isCurrentlyInCreation(String beanName)
+		protected boolean isActuallyInCreation(String beanName)
+		public boolean isSingletonCurrentlyInCreation(String beanName)
+		//创建之前检查beanname代表bean的状态
+		//通过检查inCreationCheckExclusions和singletonsCurrentlyInCreation
+		protected void beforeSingletonCreation(String beanName)
+		protected void afterSingletonCreation(String beanName)
+		//增加可销毁的bean
+		public void registerDisposableBean(String beanName, DisposableBean bean)
+		//保存包含关系和bean依赖关系
+		public void registerContainedBean(String containedBeanName, String containingBeanName)
+		public void registerDependentBean(String beanName, String dependentBeanName)
+		//是否有依赖关系
+		protected boolean isDependent(String beanName, String dependentBeanName)
+		private boolean isDependent(String beanName, String dependentBeanName, Set<String> alreadySeen)
+		protected boolean hasDependentBean(String beanName)
+		public String[] getDependentBeans(String beanName)
+		public String[] getDependenciesForBean(String beanName)
+		//singletonsCurrentlyInDestruction设置为true，清除所有容器的内容clear
+		//最后singletonsCurrentlyInDestruction设置为false
+		public void destroySingletons()
+		public void destroySingleton(String beanName)
+		//递归清除beanname依赖的bean，dependentBeanMap中
+		//然后才调用bean的destroy方法
+		//然后消除containedBeanMap中的bean
+		//清除dependentBeanMap中残留beanName
+		//最后从dependenciesForBeanMap删除
+		protected void destroyBean(String beanName, DisposableBean bean)
+		public final Object getSingletonMutex()
+		
 
 FactoryBeanRegistrySupport extends DefaultSingletonBeanRegistry
+	说明：
+		在DefaultSingletonBeanRegistry基础之上增加FactoryBean管理功能
+	字段：
+		//FactoryBean容器
+		private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<String, Object>(16)
+	方法：
+		//获取bean的真实类别
+		protected Class<?> getTypeForFactoryBean(final FactoryBean<?> factoryBean)
+		//多线程同步优化，减小同步块
+		protected Object getCachedObjectForFactoryBean(String beanName)
+		//如果factory是单利的，而且已经初始化，则直接返回，如果没有则调用工厂方法
+		//下面这句不清楚
+		// Only post-process and store if not put there already during getObject() call above
+		// (e.g. because of circular reference processing triggered by custom getBean calls)
+		//如果factoryBeanObjectCache中检查还是没有并且shouldPostProcess为true，
+		//则提供AbstractAutowireCapableBeanFactory一个机会来执行后置处理器
+		//如果不是单利则每次都调用工厂方法shouldPostProcess为true执行后置处理器
+		protected Object getObjectFromFactoryBean(FactoryBean<?> factory, String beanName, boolean shouldPostProcess)
+		private Object doGetObjectFromFactoryBean(final FactoryBean<?> factory, final String beanName)
+		//留给子类拓展
+		protected Object postProcessObjectFromFactoryBean(Object object, String beanName) throws BeansException
+		//判断是否为FactoryBean对象，是则返回，不是则抛出异常
+		protected FactoryBean<?> getFactoryBean(String beanName, Object beanInstance) throws BeansException
+		//集成父类功能，并增加factoryBeanObjectCache.remove(beanName)
+		protected void removeSingleton(String beanName)
+		//安全检查，不清楚
+		protected AccessControlContext getAccessControlContext()
 
 AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory
+	说明：
+		拥有FactoryBeanRegistrySupport能和ConfigurableBeanFactory的实现
+	字段：
+		//父容器
+		private BeanFactory parentBeanFactory;
+		//初始化classloader
+		private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader()
+		private ClassLoader tempClassLoader
+		private boolean cacheBeanMetadata = true
+		private BeanExpressionResolver beanExpressionResolver
+		private ConversionService conversionService;
+		private final Set<PropertyEditorRegistrar> propertyEditorRegistrars =
+			new LinkedHashSet<PropertyEditorRegistrar>(4)
+		private TypeConverter typeConverter
+		private final Map<Class<?>, Class<? extends PropertyEditor>> customEditors =
+			new HashMap<Class<?>, Class<? extends PropertyEditor>>(4)
+		private final List<StringValueResolver> embeddedValueResolvers = new LinkedList<StringValueResolver>()
+		private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>()
+		private boolean hasInstantiationAwareBeanPostProcessors
+		private boolean hasDestructionAwareBeanPostProcessors
+		private final Map<String, Scope> scopes = new LinkedHashMap<String, Scope>(8)
+		private SecurityContextProvider securityContextProvider
+		private final Map<String, RootBeanDefinition> mergedBeanDefinitions =
+			new ConcurrentHashMap<String, RootBeanDefinition>(256)
+		private final Set<String> alreadyCreated =
+			Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>(256))
+		private final ThreadLocal<Object> prototypesCurrentlyInCreation =
+			new NamedThreadLocal<Object>("Prototype beans currently in creation")
+		
+	方法：
+		//-------------beanFactory实现---------------------------------
+		public Object getBean(String name) throws BeansException
+		public <T> T getBean(String name, Class<T> requiredType) throws BeansException
+		public Object getBean(String name, Object... args) throws BeansException
+		public <T> T getBean(String name, Class<T> requiredType, Object... args) throws BeansException
+		//详细说明
+		protected <T> T doGetBean(
+			final String name, final Class<T> requiredType, final Object[] args, boolean typeCheckOnly)
+			throws BeansException
+	
 
 AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory
 
 DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements ConfigurableListableBeanFactory, BeanDefinitionRegistry, Serializable
 
+http://download.eclipse.org/buildship/updates/e46/releases/1.0/1.0.21.v20161010-1640
