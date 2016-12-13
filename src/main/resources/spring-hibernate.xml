@@ -9,6 +9,14 @@
 		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
 		http://www.springframework.org/schema/aop 
 		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+	<bean id="dataSourceRouter" class="org.bear.bookstore.common.dao.DataSourceRouter">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String" value-type="com.mchange.v2.c3p0.ComboPooledDataSource">
+				<entry key="dataSource" value-ref="dataSource" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="dataSource"/>
+	</bean>
 	<!-- 配置数据源 c3p0 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
@@ -35,7 +43,7 @@
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<!-- 注入数据源 相关信息看源码 -->
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataSourceRouter" />
 		<!-- hibernate配置信息 -->
 		<property name="hibernateProperties">
 			<props>
@@ -65,7 +73,9 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	
-	<!-- 开始注解方式事务 -->
+	<!-- 
+		开始注解方式事务，与声明式事务只能选择一个
+	-->
 	<tx:annotation-driven transaction-manager="transactionManager"/>
 
 	<!-- 配置事务增强处理Bean，指定事务管理器 -->
@@ -78,7 +88,7 @@
 
 			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
 			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
-			<tx:method name="select*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="select*" propagation="REQUIRED" read-only="true" />
 			<tx:method name="load*" propagation="SUPPORTS" read-only="true" />
 
 			<!-- 其他采用默认事务方式 -->
@@ -86,17 +96,24 @@
 		</tx:attributes>
 	</tx:advice>
 	
+	<bean id="dbSwitch" class="org.bear.bookstore.common.intercepter.DBSwitchBeforeAdvice"></bean>
+	
 	<!-- Spring aop事务管理 -->
 	<aop:config proxy-target-class="true">
 		<!-- 配置切入点 -->
 		<aop:pointcut id="transactionPointcut"
-			expression="execution(* org.bear.bookstore.service..*impl.*(..))" />
-		<!-- 指定在txAdvice切入点应用txAdvice事务增强处理 -->
-		<aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" />
+			expression="execution(* org.bear.bookstore.service..*.*(..))" />
+		<!-- 
+			指定在txAdvice切入点应用txAdvice事务增强处理 
+			增加MethodBeforeAdvice实例，通过方法级别注解DbKey来实现数据库的切换
+			必须指定order，保证在数据库事务开启之前设置数据源
+		-->
+		<aop:advisor pointcut-ref="transactionPointcut" advice-ref="dbSwitch" order="1"/>
+		<aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" order="2"/>
 	</aop:config>
 	
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataSourceRouter" />
 	</bean>
 	
 	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">

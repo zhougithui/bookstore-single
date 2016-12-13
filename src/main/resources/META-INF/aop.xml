@@ -1,6 +1,7 @@
 <!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
-    <weaver options="-XnoInline -verbose -showWeaveInfo -debug -Xlint:ignore -Xset:weaveJavaPackages=true -Xset:weaveJavaxPackages=true">
+    <!-- <weaver options="-XnoInline -verbose -showWeaveInfo -debug -Xlint:ignore -Xset:weaveJavaPackages=true -Xset:weaveJavaxPackages=true"> -->
+    <weaver options="-XnoInline -showWeaveInfo -Xlint:ignore -Xset:weaveJavaPackages=true -Xset:weaveJavaxPackages=true">
         <!-- only weave classes in our application-specific packages -->
         <!-- <include within="org.bear.bookstore.test.aspectj.example1.*"/>
         <include within="org.bear.bookstore.test.cache.*"/> -->
