@@ -16,25 +16,69 @@
     <!-- if you use annotation you must configure following setting -->
     <mvc:annotation-driven />
     
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">  
-        <property name="messageConverters">  
-            <list>  
-                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>  
-                <bean  
-                    class="org.springframework.http.converter.StringHttpMessageConverter">  
-                    <property name="supportedMediaTypes">  
-                        <list>  
-                            <value>text/plain; charset=UTF-8</value>  
-                        </list>  
-                    </property>  
-                </bean>  
-            </list>  
-        </property>  
-    </bean>    
-
-    
-    
-    <!-- configure SimpleMappingExceptionResolver，异常处理 -->
+    <!-- 
+    	spring mvc提供的默认策略，同样也是可以拓展的点START
+    	策略都保存在dispatchServlet同级目录下DispatcherServlet.properties文件中
+     -->
+    <!-- 
+    	upload settings 
+    	文件上床，id为dispatcher中定义的beanName
+    	public static final String MULTIPART_RESOLVER_BEAN_NAME = "multipartResolver";
+   	-->
+	<bean id="multipartResolver"  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <property name="maxUploadSize" value="102400000"></property>
+	</bean>
+	
+	<!-- 
+		国际化bean初始化，如果beanName为localeResolver的没有配置，则会默认初始化DispatcherServlet中的配置的
+		org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
+	 -->
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"></bean>
+	<bean id="themeResolver" class="org.springframework.web.servlet.theme.FixedThemeResolver"></bean>
+	
+	<!-- 
+		通过标志位detectAllHandlerMappings判断是否需要检索所有的handlerMapping，如果为true，下面两个配置的都会被检索
+		然后进行排序，如果为false，则只会检索出beanName为handlerMapping的
+		如果ID为handlerMapping没有配置，则会创建一下两个保存在
+		List<HandlerMapping> org.springframework.web.servlet.DispatcherServlet.handlerMappings中
+	 -->
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"></bean>
+	<bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"></bean>
+	
+	<!-- 
+		通过标志位detectAllHandlerAdapters判断是否需要检索所有的handlerAdapter，如果为true，下面三个配置的都会被检索
+		然后进行排序，如果为false，则只会检索出beanName为handlerAdapter的
+		如果ID为handlerAdapter没有配置，则会创建一下三个保存在
+		List<HandlerAdapter> org.springframework.web.servlet.DispatcherServlet.handlerAdapters中
+	 -->
+	<bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"></bean>
+	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"></bean>
+	<bean id="handlerAdapter"
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/plain; charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 
+		通过标志位detectAllHandlerExceptionResolvers判断是否需要检索所有的handlerExceptionResolver，如果为true，下面三个配置的都会被检索
+		然后进行排序，如果为false，则只会检索出beanName为handlerExceptionResolver的
+		如果ID为handlerExceptionResolver没有配置，则会创建一下三个保存在
+		List<HandlerExceptionResolver> org.springframework.web.servlet.DispatcherServlet.handlerExceptionResolvers
+	 -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver"></bean>
+	<bean class="org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver"></bean>
+	<bean id="handlerExceptionResolver" class="org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver"></bean>
 	<!-- <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 	    <property name="exceptionMappings">
 	        <props>
@@ -42,20 +86,36 @@
 	        </props>
 	    </property>
 	</bean> -->
-     
-    <!-- configure the InternalResourceViewResolver -->
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
-            id="internalResourceViewResolver">
+	
+	<!-- 
+		如果beanName为viewNameTranslator不存在，则spring mvc会创建一个类为
+		org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator的实例
+	 -->
+	 <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"></bean>
+	
+	<!-- 
+		通过标志位detectAllViewResolvers判断是否需要检索所有的viewResolver，如果为true，
+		则一下配置的id并无实际意义，可以不进行配置
+		List<ViewResolver> org.springframework.web.servlet.DispatcherServlet.viewResolvers 
+		spring mvc默认使用org.springframework.web.servlet.view.InternalResourceViewResolver
+	 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <!-- 前缀 -->
         <property name="prefix" value="/WEB-INF/jsp/" />
         <!-- 后缀 -->
         <property name="suffix" value=".jsp" />
     </bean>
     
-    <!-- upload settings -->
-	<bean id="multipartResolver"  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-	    <property name="maxUploadSize" value="102400000"></property>
-	</bean>
+    <!-- 
+    	如果beanName为flashMapManager没有配置，则springmvc默认使用
+    	org.springframework.web.servlet.support.SessionFlashMapManager
+     -->
+     <bean id="flashMapManager" class="org.springframework.web.servlet.support.SessionFlashMapManager"></bean>
+	
+	<!-- springmvc提供的默认配置以及拓展点 END -->
+	
+	
+	
 	
 	
 	<!-- interceptor setting -->

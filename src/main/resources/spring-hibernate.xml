@@ -74,7 +74,18 @@
 	</bean>
 	
 	<!-- 
-		开始注解方式事务，与声明式事务只能选择一个
+		开始注解方式事务，通过spring提供的namespace的spi进行自定义标签解析
+		AopConfigUtils注册beanname为 org.springframework.aop.config.internalAutoProxyCreator的bean，
+		如果已经存在则按照类优先级别替换
+		/**
+		 * Setup the escalation list.
+		 */
+		static {
+			APC_PRIORITY_LIST.add(InfrastructureAdvisorAutoProxyCreator.class);
+			APC_PRIORITY_LIST.add(AspectJAwareAdvisorAutoProxyCreator.class);
+			APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class);
+		}
+		均为BeanPostProcess实现类，也就是采用了spring的process机制
 	-->
 	<tx:annotation-driven transaction-manager="transactionManager"/>
 

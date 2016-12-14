@@ -113,7 +113,7 @@
 	<!-- 配置SpringMVC -->
 	<servlet>
 		<servlet-name>springServlet</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<servlet-class>org.bear.bookstore.common.servlet.DispatcherServletExt</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>classpath:spring-mvc.xml</param-value>
