@@ -53,8 +53,12 @@
 	 -->
 	<bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"></bean>
 	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"></bean>
+	<!-- 
+		org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter的取缔类
+		org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+	 -->
 	<bean id="handlerAdapter"
-		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 		<property name="messageConverters">
 			<list>
 				<bean

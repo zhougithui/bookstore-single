@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.bear.bookstore.test.mybatis.mapper.CustomMapper" >
+	<insert id="save" parameterType="Custom">
+	insert into custom(cusName) values(#{cusName})
+	</insert>
+	
+	<select id="select" resultType="Custom" parameterType="java.lang.Integer">
+	select * from custom where id=#{id}
+	</select>
+</mapper>
