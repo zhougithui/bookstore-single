@@ -86,8 +86,19 @@
 			APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class);
 		}
 		均为BeanPostProcess实现类，也就是采用了spring的process机制
+		
+		tx:annotation-driven注册的是InfrastructureAdvisorAutoProxyCreator
+		
+		如果既是声明事务又包含注解事务，则会包含两个TransactionInterceptor，拦截链，会根据隔离级别进行不同的处理
+		极易出现冲突导致不能正确的执行
+		@DbKey("testDbKey")
+		@Transactional(readOnly=true,propagation=Propagation.NEVER)
+		@Override
+		public Custom select(int id) {
+			return customDao.get(id);
+		}
 	-->
-	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<!-- 配置事务增强处理Bean，指定事务管理器 -->
 	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
@@ -99,7 +110,7 @@
 
 			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
 			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
-			<tx:method name="select*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="select*" propagation="SUPPORTS" read-only="true" />
 			<tx:method name="load*" propagation="SUPPORTS" read-only="true" />
 
 			<!-- 其他采用默认事务方式 -->
@@ -109,8 +120,15 @@
 	
 	<bean id="dbSwitch" class="org.bear.bookstore.common.intercepter.DBSwitchBeforeAdvice"></bean>
 	
-	<!-- Spring aop事务管理 -->
-	<aop:config proxy-target-class="true">
+	<!-- 
+		Spring aop事务管理 
+		 beanName=org.springframework.aop.config.internalAutoProxyCreator
+		tx:annotation-driven注册的是InfrastructureAdvisorAutoProxyCreator
+		aop:config注册的class是AspectJAwareAdvisorAutoProxyCreator
+		aop:aspectj-autoproxy注册的是AnnotationAwareAspectJAutoProxyCreator
+		proxy-target-class和expose-proxy会覆盖之前的这两个属性的配置
+	-->
+	<aop:config proxy-target-class="true" expose-proxy="true">
 		<!-- 配置切入点 -->
 		<aop:pointcut id="transactionPointcut"
 			expression="execution(* org.bear.bookstore.service..*.*(..))" />

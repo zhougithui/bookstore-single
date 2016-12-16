@@ -1,11 +1,13 @@
 package org.bear.bookstore.common.servlet;
 
+import java.util.Map;
+
 import javax.servlet.ServletException;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.transaction.interceptor.TransactionInterceptor;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class DispatcherServletExt extends DispatcherServlet {
@@ -51,5 +53,8 @@ public class DispatcherServletExt extends DispatcherServlet {
 		super.onRefresh(context);
 		//此时bean已经装载完成
 		System.out.println(context.getBeanDefinitionCount() + context.getParent().getBeanDefinitionCount());
+		
+		 Map<String, TransactionInterceptor> map = context.getParent().getBeansOfType(TransactionInterceptor.class);
+		 System.out.println(map);
 	}
 }
