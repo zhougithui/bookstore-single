@@ -1,14 +1,16 @@
 package org.bear.bookstore.service.impl;
 
 import org.bear.bookstore.common.annotation.DbKey;
+import org.bear.bookstore.common.aware.ProxyReferenceAware;
 import org.bear.bookstore.dao.ICustomDao;
 import org.bear.bookstore.domain.Custom;
 import org.bear.bookstore.service.ICustomService;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomServiceImpl implements ICustomService {
+public class CustomServiceImpl implements ICustomService, ProxyReferenceAware {
 	@Autowired
 	private ICustomDao customDao;
 	
@@ -21,6 +23,13 @@ public class CustomServiceImpl implements ICustomService {
 	@Override
 	public Custom select(int id) {
 		return customDao.get(id);
+	}
+
+	ICustomService customService;
+	@Override
+	public void setProxyReferece(Object proxy) {
+		System.out.println(this.getClass().getName() + " is proxy " + AopUtils.isAopProxy(proxy));
+		this.customService = (ICustomService) proxy;
 	}
 
 }

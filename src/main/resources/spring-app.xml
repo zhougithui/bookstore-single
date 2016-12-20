@@ -24,10 +24,31 @@
 		激活自动代理功能Enables the use of the @AspectJ style of Spring AOP
 		注册的是AnnotationAwareAspectJAutoProxyCreator
 	-->
-	<aop:aspectj-autoproxy proxy-target-class="true">
+	<aop:aspectj-autoproxy proxy-target-class="true" expose-proxy="true">
 		<aop:include name=".*"/>
 	</aop:aspectj-autoproxy>
 	<!-- <context:load-time-weaver aspectj-weaving="on"
 		weaver-class="org.springframework.instrument.classloading.tomcat.TomcatLoadTimeWeaver"/> -->
 	<!-- <context:load-time-weaver aspectj-weaving="autodetect"/> -->
+	
+	<bean id="proxyReferecetAwareProcessor" class="org.bear.bookstore.common.aware.ProxyReferecetAwareProcessor"></bean>
+	
+	<!-- 
+		spring 观察者模式的模型抽象使用实例
+		使用的是java的EventObject以及EventListener
+	 -->
+	<bean id="emailService" class="org.bear.bookstore.common.observer.EmailService">
+	    <property name="blackList">
+	        <list>
+	            <value>known.spammer@example.org</value>
+	            <value>known.hacker@example.org</value>
+	            <value>john.doe@example.org</value>
+	        </list>
+	    </property>
+	</bean>
+	
+	<bean id="blackListNotifier" class="org.bear.bookstore.common.observer.BlackListNotifier">
+	    <property name="notificationAddress" value="blacklist@example.org"/>
+	</bean>
+	<bean id="entityCreatedNotifier" class="org.bear.bookstore.common.observer.EntityCreatedNotifier"></bean>
 </beans>
