@@ -51,4 +51,13 @@
 	    <property name="notificationAddress" value="blacklist@example.org"/>
 	</bean>
 	<bean id="entityCreatedNotifier" class="org.bear.bookstore.common.observer.EntityCreatedNotifier"></bean>
+	
+	
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+	    <property name="customEditors">
+	        <map>
+	            <entry key="org.bear.bookstore.domain.Custom" value="org.bear.bookstore.common.editor.CustomEditor"/>
+	        </map>
+	    </property>
+	</bean>
 </beans>
