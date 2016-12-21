@@ -6,6 +6,10 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring-app.xml,classpath:spring-hibernate.xml</param-value>
 	</context-param>
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>org.bear.bookstore.common.context.BookStoreXmlWebApplicationContext</param-value>
+	</context-param>
 	<!-- 设置默认的配置文件属性，如果 spring.profiles.active没有配置则会选择dev-->
 	<!-- <context-param>
 		<param-name>spring.profiles.default</param-name>
@@ -61,14 +65,14 @@
 	</filter-mapping>
 
 	<!-- <form action="" method="put" enctype="application/x-www-form-urlencoded">，spring对put表单的支持 -->
-	<!-- <filter>
-		<filter-name>httpPutFormcontentFilter</filter-name>
-		<filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+	<filter>
+	    <filter-name>httpPutFormFilter</filter-name>
+	    <filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>httpPutFormContentFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping> -->
+	    <filter-name>httpPutFormFilter</filter-name>
+	    <servlet-name>springServlet</servlet-name>
+	</filter-mapping>
 
 	<!-- ETAG类似于last-modify，如果没有修改则返回304，节约带宽 -->
 	<filter>
@@ -95,6 +99,7 @@
 	<filter>
 		<filter-name>openSessionInViewFilter</filter-name>
 		<filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>
+		<async-supported>true</async-supported>
 		<!-- singleSession默认为true,若设为false则等于没用OpenSessionInView 。所以默认可以不写 -->
 		<init-param>
 			<param-name>singleSession</param-name>
@@ -108,6 +113,11 @@
 	<filter-mapping>
 		<filter-name>openSessionInViewFilter</filter-name>
 		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ASYNC</dispatcher>
 	</filter-mapping>
 
 	<!-- 配置SpringMVC -->
@@ -117,6 +127,10 @@
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>classpath:spring-mvc.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>contextClass</param-name>
+			<param-value>org.bear.bookstore.common.context.BookStoreXmlWebApplicationContext</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

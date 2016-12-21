@@ -26,10 +26,11 @@ public class CustomServiceImpl implements ICustomService, ProxyReferenceAware {
 	@DbKey("testDbKey")
 	@Override
 	public Custom select(int id) {
-		if(custom != null){
+		Custom cus = customDao.get(id);
+		if(cus == null){
 			return custom;
 		}
-		return customDao.get(id);
+		return cus;
 	}
 
 	ICustomService customService;

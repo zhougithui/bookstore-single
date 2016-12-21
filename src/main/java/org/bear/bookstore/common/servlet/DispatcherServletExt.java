@@ -1,6 +1,8 @@
 package org.bear.bookstore.common.servlet;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
@@ -9,6 +11,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 public class DispatcherServletExt extends DispatcherServlet {
 	private static final long serialVersionUID = 2061104342154771764L;
@@ -54,7 +59,19 @@ public class DispatcherServletExt extends DispatcherServlet {
 		//此时bean已经装载完成
 		System.out.println(context.getBeanDefinitionCount() + context.getParent().getBeanDefinitionCount());
 		
-		 Map<String, TransactionInterceptor> map = context.getParent().getBeansOfType(TransactionInterceptor.class);
-		 System.out.println(map);
+		Map<String, TransactionInterceptor> map = context.getParent().getBeansOfType(TransactionInterceptor.class);
+		System.out.println(map);
+		
+		Map<String, HandlerAdapter> handleradapterMap = context.getBeansOfType(HandlerAdapter.class);
+		Map<String, HandlerMapping> handlermappingMap = context.getBeansOfType(HandlerMapping.class);
+		for(Iterator<Entry<String, HandlerAdapter>> iter = handleradapterMap.entrySet().iterator();iter.hasNext();){
+			Entry<String, HandlerAdapter> entry = iter.next();
+			String key = entry.getKey();
+			HandlerAdapter adapter = entry.getValue();
+			if(adapter.getClass().isAssignableFrom(RequestMappingHandlerAdapter.class)){
+				RequestMappingHandlerAdapter value = (RequestMappingHandlerAdapter) adapter;
+				System.out.println(key + "=" + value.getMessageConverters());
+			}
+		}
 	}
 }
