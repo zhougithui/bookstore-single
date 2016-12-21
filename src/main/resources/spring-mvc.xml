@@ -79,6 +79,7 @@
 		配置多个RequestMappingHandlerAdapter引发的覆盖问题：
 		mvc:annotation-driven首先会注册一个RequestMappingHandlerAdapter
 		如果没有指定id为org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+		前提是allowBeanDefinitionOverriding为true的情况下，默认为true
 		，则会覆盖，否则不会覆盖，这样spring会选择第一个匹配的adapter来处理请求，也就是bean的注册顺序
 		mvc:annotation-driven已经注册了一个RequestMappingHandlerAdapter，如果没有配置messageConverters
 		系统会初始化默认的messageConverters，所以id为requestMappingHandlerAdapter中配置的
