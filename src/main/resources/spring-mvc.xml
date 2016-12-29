@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:context="http://www.springframework.org/schema/context"
     xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">                    
  
@@ -53,6 +53,25 @@
 		org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
 	 -->
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"></bean>
+	
+	<!--
+		只能存在一个localeResolver
+		in seconds. If set to -1, the cookie is not persisted (deleted when browser shuts down) 
+	-->
+	<!-- <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+	    <property name="cookieName" value="clientlanguage"/>
+	    <property name="cookieMaxAge" value="100000" />
+	</bean> -->
+	
+	<!-- 
+	FixedThemeResolver
+		Selects a fixed theme, set using the defaultThemeName property.
+	SessionThemeResolver
+		The theme is maintained in the user’s HTTP session. It only 
+		needs to be set once for each session, but is not persisted between sessions.
+	CookieThemeResolver
+		The selected theme is stored in a cookie on the client.
+	 -->
 	<bean id="themeResolver" class="org.springframework.web.servlet.theme.FixedThemeResolver"></bean>
 	
 	<!-- 
@@ -179,7 +198,27 @@
 	    <mvc:interceptor>
 	        <mvc:mapping path="/**"/>
 	        <bean class="org.bear.bookstore.common.interceptor.AuthorityInterceptor"></bean>
-	    </mvc:interceptor>        
+	    </mvc:interceptor>
+	    
+	    <mvc:interceptor>
+	    	<mvc:mapping path="/**"/>
+	    	<!-- 
+	    		/api/cus?siteLanguage=nl 这样修改locale
+	    	 -->
+	    	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	    		<property name="paramName" value="siteLanguage"/>
+	    	</bean>
+	    </mvc:interceptor> 
+	      
+	    <mvc:interceptor>
+	    	<mvc:mapping path="/**"/>
+	    	<!-- 
+	    		/api/cus?siteTheme=cool 这样修改皮肤
+	    	 -->
+	    	<bean id="themeChangeInterceptor" class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+	    		<property name="paramName" value="siteTheme"/>
+	    	</bean>
+	    </mvc:interceptor>   
 	</mvc:interceptors>
 	
 	<!-- WebMvcConfigurerAdapte或者@CrossOrigin注解 -->
