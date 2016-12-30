@@ -102,7 +102,7 @@ public class CustomController {
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping(path = "/form", method = RequestMethod.POST)
+	@RequestMapping(path = "/form1", method = RequestMethod.POST)
 	public String handleFormUpload(@RequestParam("name") String name, @RequestParam("file") Part file)
 			throws IOException {
 		InputStream inputStream = file.getInputStream();
