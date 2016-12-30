@@ -7,6 +7,7 @@ import org.springframework.web.servlet.mvc.method.annotation.AbstractJsonpRespon
 public class JsonpAdvice extends AbstractJsonpResponseBodyAdvice {
 
     public JsonpAdvice() {
-        super("callback");
+    	//当请求参数包含callback或者jsonp时返回jsonp请求参数
+        super("callback", "jsonp");
     }
 }

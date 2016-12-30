@@ -72,7 +72,14 @@
 	CookieThemeResolver
 		The selected theme is stored in a cookie on the client.
 	 -->
-	<bean id="themeResolver" class="org.springframework.web.servlet.theme.FixedThemeResolver"></bean>
+	<!-- <bean id="themeResolver" class="org.springframework.web.servlet.theme.FixedThemeResolver"></bean> -->
+	<!-- 
+		如果直接访问jsp，则不通过拦截器直接使用springmvc的theme默认为theme
+		如果是访问/api/cus/getCusById/1?siteTheme=cool，则会修改theme为cool，并在此session一直生效
+		org.springframework.web.servlet.theme.ThemeChangeInterceptor
+	-->
+	<bean id="themeResolver" class="org.springframework.web.servlet.theme.SessionThemeResolver"></bean>
+	<!-- <bean id="themeResolver" class="org.springframework.web.servlet.theme.CookieThemeResolver"></bean> -->
 	
 	<!-- 
 		通过标志位detectAllHandlerMappings判断是否需要检索所有的handlerMapping，如果为true，下面两个配置的都会被检索
