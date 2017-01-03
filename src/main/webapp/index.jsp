@@ -28,7 +28,14 @@
         },  
         timeout:3000  
     });*/
-alert('index.jsp');
+    $.ajax({
+    	method:"get",
+        url:"http://127.0.0.1/bookstore-single/api/cus/getCusById/1",
+        success:function(result) {  
+            alert(result.cusName); 
+        },  
+        timeout:3000  
+    });
 </script>
 </head>
 <body>

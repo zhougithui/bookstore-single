@@ -53,9 +53,10 @@
     	<!-- <mvc:async-support ></mvc:async-support> -->
     	<!-- 
     		在这个地方和在RequestMappingHandlerAdapter中配置的区别是什么
-    		为什么在这配置有用在RequestMappingHandlerAdapter中配置没用
+    		为什么在这配置有用在RequestMappingHandlerAdapter中配置没用,
+    		在下面配置的RequestMappingHandlerAdapter解释
     	 -->
-    	<!-- <mvc:message-converters>
+    	<mvc:message-converters>
     		<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 				<property name="objectMapper">
 					<bean class="com.fasterxml.jackson.databind.ObjectMapper">
@@ -67,7 +68,22 @@
 					</bean>
 	     		</property>
 			</bean>
-    	</mvc:message-converters> -->
+    	</mvc:message-converters>
+    	<!-- 
+    		默认值 
+	    	RequestMappingInfo.BuilderConfiguration
+				private boolean suffixPatternMatch = true;
+	    		private boolean trailingSlashMatch = true;
+				private boolean registeredSuffixPatternMatch = false;
+			
+			AbstractHandlerMapping
+				private UrlPathHelper urlPathHelper = new UrlPathHelper();
+				private PathMatcher pathMatcher = new AntPathMatcher();
+    	 -->
+    	<mvc:path-matching
+	        suffix-pattern="true"
+	        trailing-slash="true"
+	        registered-suffixes-only="false"/>
     </mvc:annotation-driven>
     
     <!-- 
@@ -212,17 +228,15 @@
 	
 	<!-- 
 		通过标志位detectAllViewResolvers判断是否需要检索所有的viewResolver，如果为true，
-		则一下配置的id并无实际意义，可以不进行配置
+		则一下配置的id并无实际意义，可以不进行配置 
 		List<ViewResolver> org.springframework.web.servlet.DispatcherServlet.viewResolvers 
 		spring mvc默认使用org.springframework.web.servlet.view.InternalResourceViewResolver
 	 -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <!-- 前缀 -->
         <property name="prefix" value="/WEB-INF/jsp/" />
-        <!-- 后缀 -->
         <property name="suffix" value=".jsp" />
     </bean>
-    
+
     <!-- 
     	如果beanName为flashMapManager没有配置，则springmvc默认使用
     	org.springframework.web.servlet.support.SessionFlashMapManager
@@ -237,7 +251,7 @@
 	
 	<!-- interceptor setting -->
 	<mvc:interceptors>
-	    <mvc:interceptor>
+	    <mvc:interceptor> 
 	        <mvc:mapping path="/**"/>
 	        <bean class="org.bear.bookstore.common.interceptor.AuthorityInterceptor"></bean>
 	    </mvc:interceptor>
@@ -264,15 +278,15 @@
 	</mvc:interceptors>
 	
 	<!-- WebMvcConfigurerAdapte或者@CrossOrigin注解 -->
-	<!-- <mvc:cors>
-		<mvc:mapping path="/api/**"
-			allowed-origins="http://domain1.com, http://domain2.com"
+	<mvc:cors>
+		<!-- 
 			allowed-methods="GET, PUT"
 			allowed-headers="header1, header2, header3"
 			exposed-headers="header1, header2" allow-credentials="false"
+		 -->
+		<mvc:mapping path="/api/cus/**"
+			allowed-origins="http://localhost" 
 			max-age="123" />
-		<mvc:mapping path="/resources/**"
-			allowed-origins="http://domain1.com" />
-	</mvc:cors> -->
+	</mvc:cors>
 	
 </beans>
