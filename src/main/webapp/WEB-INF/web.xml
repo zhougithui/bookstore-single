@@ -148,6 +148,15 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	
+	<!-- 
+		配置了这个以后tomcat会去webapp下面一次寻找index1.jsp/index.jsp，如果都不存在则出现404异常
+		且优先级高于springmvc的<mvc:view-controller path="/" view-name="redirect:index.jsp"/>
+	 -->
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index1.jsp</welcome-file>
+	</welcome-file-list>
+	
 	<!-- 未处理异常跳转，errorController -->
 	<error-page>
 	    <location>/error</location>

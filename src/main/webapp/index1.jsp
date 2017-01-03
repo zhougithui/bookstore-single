@@ -28,10 +28,10 @@
         },  
         timeout:3000  
     });*/
-alert('index.jsp');
+alert('index1.jsp');
 </script>
 </head>
 <body>
-	hello world.
+	hello1 world.
 </body>
 </html>

@@ -10,8 +10,43 @@
 	<!-- 扫描controller自动注入为bean -->
 	<context:component-scan base-package="org.bear.bookstore.web" />
 	
-	<!-- don't handle the static resource -->
-    <mvc:default-servlet-handler />
+	<!-- 
+		此标签会注入DefaultServletHttpRequestHandler对象
+		以下是处理请求的方式，获取容器的RequestDispatcher，进行请求转发
+		RequestDispatcher rd = this.servletContext.getNamedDispatcher(this.defaultServletName);
+		if (rd == null) {
+			throw new IllegalStateException("A RequestDispatcher could not be located for the default servlet '" +
+					this.defaultServletName + "'");
+		}
+		rd.forward(request, response);
+		
+		当然，如果dispatcherServlet配置拦截路径为/*时，springmvc会拦截所有的请求，*.jsp/*.css/*.do等
+		这个时候如果没有配置default-servlet-handler，则jsp和css会出现404，配置了jsp会显示源码   因此dispatcherServlet拦截路径不能配置成/*
+		
+		如果dispatcherServlet配置拦截路径为/时，则不会拦截*.jsp，jsp交由tomcat的default的servlet处理
+	 -->
+    <mvc:default-servlet-handler default-servlet-name="default"/>
+    
+    <!-- 
+		静态资源缓存，注册一个SimpleUrlHandlerMapping和ResourceHttpRequestHandler来处理
+		和mvc:default-servlet-handler
+	 -->
+	<mvc:resources mapping="/resources/**" location="/common/">
+	    <mvc:cache-control max-age="3600" cache-public="true"/>
+	</mvc:resources>
+    
+    <!-- 
+    	当dispatcherServlet配置的拦截路径为/*时，访问跟路径是会重定向到index.jsp 
+    	如果web.xml中配置了
+		<welcome-file-list>
+			<welcome-file>index.jsp</welcome-file>
+			<welcome-file>index1.jsp</welcome-file>
+		</welcome-file-list>
+		则会先访问index.jsp，然后index1.jsp，如果访问不到则出现404
+		
+		也就是如果说对于访问跟路径来说，配置了welcome-file-list，则下面配置毫无意义
+     -->
+    <mvc:view-controller path="/" view-name="redirect:index.jsp"/>
  
     <!-- if you use annotation you must configure following setting -->
     <mvc:annotation-driven enable-matrix-variables="true">
@@ -240,10 +275,4 @@
 			allowed-origins="http://domain1.com" />
 	</mvc:cors> -->
 	
-	<!-- 
-		静态资源缓存
-	 -->
-	<mvc:resources mapping="/resources/**" location="/common/">
-	    <mvc:cache-control max-age="3600" cache-public="true"/>
-	</mvc:resources>
 </beans>
