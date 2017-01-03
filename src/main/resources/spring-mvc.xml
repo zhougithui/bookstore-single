@@ -239,4 +239,11 @@
 		<mvc:mapping path="/resources/**"
 			allowed-origins="http://domain1.com" />
 	</mvc:cors> -->
+	
+	<!-- 
+		静态资源缓存
+	 -->
+	<mvc:resources mapping="/resources/**" location="/common/">
+	    <mvc:cache-control max-age="3600" cache-public="true"/>
+	</mvc:resources>
 </beans>

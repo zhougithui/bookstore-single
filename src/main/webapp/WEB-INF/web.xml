@@ -74,14 +74,23 @@
 	    <servlet-name>springServlet</servlet-name>
 	</filter-mapping>
 
-	<!-- ETAG类似于last-modify，如果没有修改则返回304，节约带宽 -->
+	<!-- 
+		ETAG类似于last-modify，如果没有修改则返回304，节约带宽
+		客户端第一次请求时ShallowEtagHeaderFilter包装response，设置响应头
+		ETag:"0ec689bde5d3253e521c1a727ba0b8830"
+		客户端下次请求时，发送响应头
+		If-None-Match:"0ec689bde5d3253e521c1a727ba0b8830"
+		ShallowEtagHeaderFilter读取If-None-Match内容和生成的ETag进行比较，如果相等则返回304
+		否则返回200，并设置响应头
+		ETag:新的ETag值
+	 -->
 	<filter>
 		<filter-name>shallowEtagHeaderFilter</filter-name>
 		<filter-class>org.springframework.web.filter.ShallowEtagHeaderFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>shallowEtagHeaderFilter</filter-name>
-		<servlet-name>/etag</servlet-name>
+		<servlet-name>springServlet</servlet-name>
 	</filter-mapping>
 
 	<!-- 将http request对象绑定到线程上 -->

@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 <link rel="stylesheet" href="<%=request.getContextPath() %>/<s:theme code='styleSheet'/>" type="text/css" />
-<script type="text/javascript" src="common/jquery/jquery.min.1.11.2.js"></script>
+<script type="text/javascript" src="resources/jquery/jquery.min.1.11.2.js"></script>
 <!-- jsonp访问的一种方式 -->
 <%-- <script type="text/javascript">  
     function jsonpCallback(result) {  
@@ -18,7 +18,7 @@
  --%>
 <script type="text/javascript">
 <!-- jsonp访问的另一种方式 -->
-$.ajax({  
+/*$.ajax({  
         url:"http://127.0.0.1/bookstore-single/api/cus/getCusById/1",  
         dataType:'jsonp',  
         data:'',  
@@ -27,7 +27,7 @@ $.ajax({
             alert(result.cusName); 
         },  
         timeout:3000  
-    });
+    });*/
 </script>
 </head>
 <body>
