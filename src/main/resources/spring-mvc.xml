@@ -10,7 +10,7 @@
 	<!-- 扫描controller自动注入为bean -->
 	<context:component-scan base-package="org.bear.bookstore.web" />
 	
-	<!-- 
+	<!--
 		此标签会注入DefaultServletHttpRequestHandler对象
 		以下是处理请求的方式，获取容器的RequestDispatcher，进行请求转发
 		RequestDispatcher rd = this.servletContext.getNamedDispatcher(this.defaultServletName);
@@ -235,7 +235,7 @@
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/jsp/" />
         <property name="suffix" value=".jsp" />
-        <property name="order" value="1"/>
+        <property name="order" value="2"/>
     </bean>
     
     <!-- 配置freeMarker视图解析器 -->
@@ -244,7 +244,7 @@
         <property name="contentType" value="text/html; charset=utf-8"/>
         <property name="cache" value="true" />
         <property name="suffix" value=".ftl" />
-        <property name="order" value="0"/>
+        <property name="order" value="1"/>
     </bean>
 
     <!-- 配置freeMarker的模板路径 -->
@@ -269,6 +269,20 @@
 	</bean>
 	<bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape" />
    
+    <!-- 配置Velocity视图解析器 -->
+    <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+        <property name="cache" value="false"/>
+        <property name="order" value="0"/>
+        <property name="suffix" value=".vm"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <!-- <property name="toolboxConfigLocation" value="WEB-INF/velocity/toolbox.xml"/> -->
+    </bean>
+ 
+    <!-- 配置Velocity引擎 -->
+    <bean id="velocityConfigurer" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <property name="resourceLoaderPath" value="/WEB-INF/velocity/vm/"/>
+    </bean>
+    
     
     <!-- 
     	如果beanName为flashMapManager没有配置，则springmvc默认使用

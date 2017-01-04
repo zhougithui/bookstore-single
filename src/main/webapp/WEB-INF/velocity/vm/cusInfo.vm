@@ -1,0 +1,10 @@
+<html>
+    <head>
+        <title>Welcome velocity!</title>
+    </head>
+    <body>
+        <h1>velocity Welcome ${cus.cusName}!</h1>
+        <p>Our latest product:
+        <a href="${cus.cusName}">${cus.cusName}</a>!
+    </body>
+</html>
