@@ -235,8 +235,41 @@
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/jsp/" />
         <property name="suffix" value=".jsp" />
+        <property name="order" value="1"/>
+    </bean>
+    
+    <!-- 配置freeMarker视图解析器 -->
+    <bean id="viewResolverFtl" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+        <property name="contentType" value="text/html; charset=utf-8"/>
+        <property name="cache" value="true" />
+        <property name="suffix" value=".ftl" />
+        <property name="order" value="0"/>
     </bean>
 
+    <!-- 配置freeMarker的模板路径 -->
+    <bean id="freemarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath">
+			<value>/WEB-INF/ftl/</value>
+		</property>
+		<property name="freemarkerVariables">
+			<map>
+				<entry key="xml_escape" value-ref="fmXmlEscape" />
+			</map>
+		</property>
+		<property name="defaultEncoding">
+			<value>utf-8</value>
+		</property>
+		<property name="freemarkerSettings">
+			<props>
+				<prop key="template_update_delay">3600</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape" />
+   
+    
     <!-- 
     	如果beanName为flashMapManager没有配置，则springmvc默认使用
     	org.springframework.web.servlet.support.SessionFlashMapManager
@@ -244,7 +277,6 @@
      <bean id="flashMapManager" class="org.springframework.web.servlet.support.SessionFlashMapManager"></bean>
 	
 	<!-- springmvc提供的默认配置以及拓展点 END -->
-	
 	
 	
 	
