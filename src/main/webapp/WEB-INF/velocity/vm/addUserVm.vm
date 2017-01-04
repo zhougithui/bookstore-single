@@ -1,0 +1,22 @@
+## addUserVm.vm 
+## author: zh
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <title>add custom</title>
+    </head>
+    <body>
+        <form method="post" action="#springUrl("/api/cus/saveCus/${flag}")" >
+	        #springBind("cus.cusName")
+		            姓名：<input type="text" name="${status.expression}" value="$!status.value"/>
+		            #foreach($error in $status.errorMessages) <b>$error</b> <br> #end
+		            <br/>
+         	#springBind("cus.phone")
+		            手机号码：<input type="text" name="${status.expression}" value="$!status.value"/>
+		            #foreach($error in $status.errorMessages) <b>$error</b> <br> #end
+		            <br/>
+	        <input type="submit" name="Submit"/><br/>
+        </form>
+    </body>
+</html>

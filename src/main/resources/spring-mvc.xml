@@ -48,8 +48,45 @@
      -->
     <mvc:view-controller path="/" view-name="redirect:index.jsp"/>
  
+ 	<!-- 
+ 		自定义validator
+ 	 -->
+ 	<bean id="messageSource"    
+	    class="org.springframework.context.support.ReloadableResourceBundleMessageSource">    
+	    <property name="basenames">    
+	        <list>    
+	            <value>classpath:messages/messages</value>    
+	            <value>classpath:org/hibernate/validator/ValidationMessages</value>    
+	        </list>    
+	    </property>    
+	    <!-- 
+	    	AbstractMessageSource
+	    	/**
+			 * Return a fallback default message for the given code, if any.
+			 * <p>Default is to return the code itself if "useCodeAsDefaultMessage" is activated,
+			 * or return no fallback else. In case of no fallback, the caller will usually
+			 * receive a NoSuchMessageException from {@code getMessage}.
+			 * @param code the message code that we couldn't resolve
+			 * and that we didn't receive an explicit default message for
+			 * @return the default message to use, or {@code null} if none
+			 * @see #setUseCodeAsDefaultMessage
+			 */
+			protected String getDefaultMessage(String code) {
+				if (isUseCodeAsDefaultMessage()) {
+					return code;
+				}
+				return null;
+			}
+			 如果为true，则直接返回min，不往下进行解析，默认值也是false
+	     -->
+	    <property name="useCodeAsDefaultMessage" value="false" />    
+	</bean>    
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">      
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>  
+		<property name="validationMessageSource" ref="messageSource"/>      
+	</bean>
     <!-- if you use annotation you must configure following setting -->
-    <mvc:annotation-driven enable-matrix-variables="true">
+    <mvc:annotation-driven enable-matrix-variables="true" validator="validator">
     	<!-- <mvc:async-support ></mvc:async-support> -->
     	<!-- 
     		在这个地方和在RequestMappingHandlerAdapter中配置的区别是什么
@@ -104,7 +141,7 @@
 		org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
 	 -->
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"></bean>
-	
+  
 	<!--
 		只能存在一个localeResolver
 		in seconds. If set to -1, the cookie is not persisted (deleted when browser shuts down) 
@@ -177,7 +214,7 @@
 		}
 	 -->
 	<!-- <bean id="requestMappingHandlerAdapter" -->
-	<bean id="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"
+	<!-- <bean id="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"
 	 class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 		<property name="messageConverters">
 			<list>
@@ -201,7 +238,7 @@
 				</bean>
 			</list>
 		</property>
-	</bean>
+	</bean> -->
 	
 	<!-- 
 		通过标志位detectAllHandlerExceptionResolvers判断是否需要检索所有的handlerExceptionResolver，如果为true，下面三个配置的都会被检索
@@ -281,6 +318,13 @@
     <!-- 配置Velocity引擎 -->
     <bean id="velocityConfigurer" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
         <property name="resourceLoaderPath" value="/WEB-INF/velocity/vm/"/>
+        <!-- 中文乱码解决 -->
+        <property name="velocityProperties">
+            <props>
+                <prop key="input.encoding">utf-8</prop>
+                <prop key="output.encoding">utf-8</prop>
+            </props>
+        </property> 
     </bean>
     
     

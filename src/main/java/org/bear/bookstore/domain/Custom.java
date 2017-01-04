@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -26,8 +27,11 @@ public class Custom {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@Length(min=3)
+	@NotNull
+	@Length(min=3, message="{custom.cusName.msg}")
 	private String cusName;
+	@NotNull
+	@Length(min=11, max=11, message="{custom.phone.msg}")
 	private String phone;
 	private String email;
 	@Enumerated(EnumType.ORDINAL)

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bear.bookstore.domain.Custom;
 import org.bear.bookstore.service.ICustomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class CustomController {
 	@RequestMapping("/getCusByName/{cusName}/{birthday}")
 	@ResponseBody
 	public Custom queryCustomByName(@Valid Custom cus, BindingResult result, 
-			@CookieValue("JSESSIONID") String cookie){
+			@CookieValue(name="JSESSIONID", required=false) String cookie){
 		return cus;
 	}
 	
@@ -112,14 +113,33 @@ public class CustomController {
 	}
 	
 	
-	//-------------------------freemarker------------------------------------
-	@RequestMapping("/info")
-	public String cusInfo(Model model){
-		Custom cus = new Custom();
-		cus.setCusName("zh");
-		
-		model.addAttribute("cus", cus);
-		return "cusInfo";
+	//-------------------------freemarker + jsp + velocity------------------------------------
+	/**
+	 * 根据flag跳转至不同的模板
+	 * @param flag 模板选择  ftl jsp vm 
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/cusform/{flag}")
+	public String cusform(@PathVariable String flag, Model model){
+		if(!model.containsAttribute("cus")){
+			model.addAttribute("cus", new Custom());
+			model.addAttribute("flag", flag);
+		}
+		return "addUser" + StringUtils.capitalize(flag);
 	}
+	
+	@RequestMapping("/saveCus/{flag}")
+	public String cusform(@Valid Custom cus, BindingResult result,
+			@PathVariable(required=false) String flag, Model model){
+		if(result.hasErrors()){
+			model.addAttribute("cus", cus);  
+			model.addAttribute("org.springframework.validation.BindingResult.cus", result); 
+			return cusform(flag, model);
+		}
+		model.addAttribute("cus", cus);
+		return "showUser" + StringUtils.capitalize(flag);
+	}
+	
 	
 }

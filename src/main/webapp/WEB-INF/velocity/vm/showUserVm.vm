@@ -1,0 +1,9 @@
+<html>
+    <head>
+        <title>Welcome velocity!</title>
+    </head>
+    <body>
+        <h1>Welcome velocity ${cus.cusName}!</h1>
+        <a href="${cus.cusName}">${cus.cusName}</a>!
+    </body>
+</html>
