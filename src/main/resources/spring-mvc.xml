@@ -122,6 +122,10 @@
 	        trailing-slash="true"
 	        registered-suffixes-only="false"/>
     </mvc:annotation-driven>
+     
+    <!-- <mvc:view-resolvers>
+	    <mvc:script-template/>
+	</mvc:view-resolvers> -->
     
     <!-- 
     	spring mvc提供的默认策略，同样也是可以拓展的点START
@@ -272,7 +276,7 @@
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/jsp/" />
         <property name="suffix" value=".jsp" />
-        <property name="order" value="2"/>
+        <property name="order" value="10"/>
     </bean>
     
     <!-- 配置freeMarker视图解析器 -->
@@ -325,6 +329,16 @@
                 <prop key="output.encoding">utf-8</prop>
             </props>
         </property> 
+    </bean>
+    
+    <mvc:script-template-configurer engine-name="nashorn" render-object="Mustache" render-function="render">
+	    <mvc:script location="/common/mustache/mustache.js"/>
+	    <mvc:script location="/common/mustache/render.js"/>
+	</mvc:script-template-configurer>
+	<bean id="scriptViewResolver" class="org.springframework.web.servlet.view.script.ScriptTemplateViewResolver">
+        <property name="order" value="2"/>
+        <property name="prefix" value="/WEB-INF/mustache/" />
+        <property name="suffix" value=".html"/>
     </bean>
     
     
