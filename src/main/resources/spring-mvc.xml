@@ -356,11 +356,19 @@
 	<bean name="jaxb2" class="org.springframework.web.servlet.view.xml.MarshallingView">  
 		<constructor-arg ref="marshaller" />
 	</bean>
-	
 	<!-- 视图解析器，根据视图的名称new ModelAndView(name)，在配置文件查找对应的bean配置 -->  
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">  
         <property name="order" value="3"/>  
     </bean>  
+    
+    <!-- 
+		xslt支持
+	 -->
+	 <bean id="xsltViewResolver" class="org.springframework.web.servlet.view.xslt.XsltViewResolver">
+        <property name="order" value="4"/>
+        <property name="prefix" value="/WEB-INF/xslt/" />
+        <property name="suffix" value=".xslt"/>
+    </bean>
     
     
     <!-- 
