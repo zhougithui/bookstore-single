@@ -18,9 +18,9 @@ public class RssViewer extends AbstractRssFeedView {
     protected void buildFeedMetadata(Map<String, Object> model, Channel feed,
         HttpServletRequest request) {
  
-        feed.setTitle("zh rss");
-        feed.setDescription("Java Tutorials and Examples");
-        feed.setLink("http://www.zh.com");
+        feed.setTitle("bear_hui的博客");
+        feed.setDescription("bear hui的blog");
+        feed.setLink("http://blog.csdn.net/zhou_java_hui");
  
         super.buildFeedMetadata(model, feed, request);
     }
