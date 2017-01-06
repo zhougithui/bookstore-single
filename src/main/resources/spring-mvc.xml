@@ -442,6 +442,7 @@
     
     <!--   stomp and message broker config  start -->  
     <websocket:message-broker application-destination-prefix="/app">  
+        <websocket:transport send-timeout="15000" send-buffer-size="524288" message-size="131072"/>
         <!--   websocket 底层连接地址 -->  
         <websocket:stomp-endpoint path="/marcopolo" >  
             <websocket:sockjs/>  
