@@ -442,12 +442,30 @@
     
     <!--   stomp and message broker config  start -->  
     <websocket:message-broker application-destination-prefix="/app">  
-        <websocket:transport send-timeout="15000" send-buffer-size="524288" message-size="131072"/>
-        <!--   websocket 底层连接地址 -->  
+        <websocket:transport send-timeout="15000" send-buffer-size="524288" message-size="131072" />
+        <!-- websocket 底层连接地址 -->  
         <websocket:stomp-endpoint path="/marcopolo" >  
-            <websocket:sockjs/>  
+        	<websocket:handshake-interceptors>
+				<bean class="org.bear.bookstore.web.ws.HandshakeInterceptor"></bean>
+        	</websocket:handshake-interceptors>
+            <websocket:sockjs/> 
         </websocket:stomp-endpoint>  
-         <websocket:simple-broker prefix="/topic,/queue" />  
+        <!-- 
+        	<websocket:simple-broker prefix="/topic,/queue" />
+        	
+        	system-login="system" system-passcode="manager" 
+			client-login="system" client-passcode="manager"
+         -->
+        <websocket:stomp-broker-relay 
+        	prefix="/topic,/queue"
+			relay-host="127.0.0.1" relay-port="61613" 
+			heartbeat-send-interval="1000" heartbeat-receive-interval="1000"/>
+        <websocket:client-inbound-channel>
+        	<websocket:executor core-pool-size="4" max-pool-size="8" keep-alive-seconds="60" queue-capacity="100"/>
+        </websocket:client-inbound-channel>
+        <websocket:client-outbound-channel>
+        	<websocket:executor core-pool-size="4" max-pool-size="8" keep-alive-seconds="60" queue-capacity="100"/>
+        </websocket:client-outbound-channel>
     </websocket:message-broker>  
     <!--   stomp and message broker config  end--> 
     
