@@ -428,10 +428,40 @@
 	
 	<websocket:handlers allowed-origins="http://localhost">
         <websocket:mapping path="/myHandler" handler="myHandler"/>
+        <websocket:mapping path="/myHandler1" handler="myHandler"/>
         <websocket:handshake-interceptors>
             <bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
         </websocket:handshake-interceptors>
-        <websocket:sockjs/>
+        <websocket:sockjs websocket-enabled="true">
+        	<websocket:transport-handlers register-defaults="false">
+        		<!-- 
+        			默认采用DefaultSockJsService，如果register-defaults为false
+        			则采用TransportHandlingSockJsService，并且设置自己的TransportHandler
+        			result.add(new XhrPollingTransportHandler());
+					result.add(new XhrReceivingTransportHandler());
+					result.add(new XhrStreamingTransportHandler());
+					result.add(new JsonpPollingTransportHandler());
+					result.add(new JsonpReceivingTransportHandler());
+					result.add(new EventSourceTransportHandler());
+					result.add(new HtmlFileTransportHandler());
+					try {
+						result.add(new WebSocketTransportHandler(new DefaultHandshakeHandler()));
+					}
+        		 -->
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.XhrPollingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.XhrReceivingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.XhrStreamingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.JsonpPollingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.JsonpReceivingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.EventSourceTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.HtmlFileTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler">
+        			<constructor-arg>
+        				<bean class="org.springframework.web.socket.server.support.DefaultHandshakeHandler"></bean>
+        			</constructor-arg> 
+        		</bean>
+        	</websocket:transport-handlers>
+        </websocket:sockjs>
     </websocket:handlers>
     
     <bean class="org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean">
