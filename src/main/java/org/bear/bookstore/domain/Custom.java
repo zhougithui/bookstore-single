@@ -1,5 +1,6 @@
 package org.bear.bookstore.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -23,7 +24,8 @@ import lombok.Data;
  */
 @Data
 @Entity
-public class Custom {
+public class Custom implements Serializable {
+	private static final long serialVersionUID = -6126175292864588774L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;

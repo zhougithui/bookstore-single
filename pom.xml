@@ -513,20 +513,6 @@
 		    <version>1.0.0</version>
 		</dependency>
 				
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api -->
-		<dependency>
-		    <groupId>org.apache.tomcat</groupId>
-		    <artifactId>tomcat-websocket-api</artifactId>
-		    <version>8.5.9</version>
-		    <scope>provided</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api -->
-		<dependency>
-		    <groupId>org.apache.tomcat</groupId>
-		    <artifactId>tomcat-websocket</artifactId>
-		    <version>8.5.9</version>
-		    <scope>provided</scope>
-		</dependency>
 		<dependency>
 		    <groupId>org.apache.tomcat</groupId>
 		    <artifactId>tomcat-catalina</artifactId>
@@ -538,6 +524,13 @@
 		    <artifactId>tomcat-coyote</artifactId>
 		    <version>8.5.9</version>
 		    <scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
+		<dependency>
+		    <groupId>com.caucho</groupId>
+		    <artifactId>hessian</artifactId>
+		    <version>4.0.38</version>
 		</dependency>
 				
 					

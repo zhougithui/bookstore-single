@@ -60,4 +60,33 @@
 	        </map>
 	    </property>
 	</bean>
+	
+	
+	<!-- 
+		服务器端定义rmi服务
+	 -->
+	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+	    <!-- does not necessarily have to be the same name as the bean to be exported -->
+	    <property name="serviceName" value="customService"/>
+	    <property name="service" ref="customService"/>
+	    <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
+	    <!-- defaults to 1099 -->
+	    <property name="registryPort" value="1199"/>
+	</bean>
+	
+	
+	<!-- 
+		 Hessian 服务器端 http://HOST:80/AccountService
+	 -->
+	<bean name="customHessianServer" class="org.springframework.remoting.caucho.HessianServiceExporter">
+	    <property name="service" ref="customService"/>
+	    <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
+		<property name="interceptors" ref="authorizationInterceptor"/>
+	</bean>
+
+	<bean id="authorizationInterceptor"
+	        class="org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor">
+	    <property name="authorizedRoles" value="administrator,zh"/>
+	</bean>
+	
 </beans>

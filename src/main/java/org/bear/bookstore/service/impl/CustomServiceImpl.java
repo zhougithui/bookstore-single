@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("customService")
 public class CustomServiceImpl implements ICustomService, ProxyReferenceAware {
 	@Autowired
 	private ICustomDao customDao;

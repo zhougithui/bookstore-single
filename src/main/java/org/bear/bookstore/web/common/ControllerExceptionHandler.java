@@ -78,6 +78,9 @@ public class ControllerExceptionHandler {
         ModelAndView mv = new ModelAndView("redirect:/error");
         mv.addObject("exception", ex);
         //mv.setView(redirectView);
+        
+        
+        ex.printStackTrace();
         return mv;
     }
 	

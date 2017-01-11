@@ -463,11 +463,11 @@
         	</websocket:transport-handlers>
         </websocket:sockjs>
     </websocket:handlers>
-    
+    <!-- 
     <bean class="org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean">
         <property name="maxTextMessageBufferSize" value="8192"/>
         <property name="maxBinaryMessageBufferSize" value="8192"/>
-    </bean>
+    </bean> -->
     
     
     <!--   stomp and message broker config  start -->  
@@ -499,4 +499,33 @@
     </websocket:message-broker>  
     <!--   stomp and message broker config  end--> 
     
+    
+    
+    <!-- 
+		rmi客户端引用服务
+	 -->
+	<bean id="clientRmiService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean" lazy-init="true">
+	    <property name="serviceUrl" value="rmi://127.0.0.1:1199/customService"/>
+	    <property name="serviceInterface" value="org.bear.bookstore.web.rmi.ICustomService"/>
+	</bean>
+	
+	<!-- 
+		Hessian 客户端
+		(1)
+		http://localhost/bookstore-single/remoting/customService
+		<servlet>
+		    <servlet-name>customHessianServer</servlet-name>
+		    <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+		</servlet>
+		
+		<servlet-mapping>
+		    <servlet-name>customHessianServer</servlet-name>
+		    <url-pattern>/remoting/customService</url-pattern>
+		</servlet-mapping>
+		
+	 -->
+	<bean id="clientHessianService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+	    <property name="serviceUrl" value="http://localhost/bookstore-single/remoting/customService"/>
+	    <property name="serviceInterface" value="org.bear.bookstore.web.hessian.ICustomService"/>
+	</bean>
 </beans>
