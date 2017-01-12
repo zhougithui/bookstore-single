@@ -5,6 +5,7 @@
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:jms="http://www.springframework.org/schema/jms"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 			http://www.springframework.org/schema/context
@@ -14,8 +15,10 @@
 			http://www.springframework.org/schema/util 
 			http://www.springframework.org/schema/util/spring-util-4.2.xsd
 			http://www.springframework.org/schema/aop 
-			http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
-	<!-- 加载配置文件 --> 
+			http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+			http://www.springframework.org/schema/jms 
+			http://www.springframework.org/schema/jms/spring-jms-4.2.xsd">
+	<!-- 加载配置文件 -->
 	<context:property-placeholder location="classpath:application-${spring.profiles.active}.properties"/>
 	<!-- 扫描service自动注入为bean -->
 	<context:component-scan base-package="org.bear.bookstore.service.impl,org.bear.bookstore.dao.impl" />
@@ -81,12 +84,71 @@
 	<bean name="customHessianServer" class="org.springframework.remoting.caucho.HessianServiceExporter">
 	    <property name="service" ref="customService"/>
 	    <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
-		<property name="interceptors" ref="authorizationInterceptor"/>
+		<!-- <property name="interceptors" ref="authorizationInterceptor"/> -->
 	</bean>
 
-	<bean id="authorizationInterceptor"
+	<!-- 
+		http请求权限拦截
+		request.isUserInRole(String role);
+	 -->
+	<!-- <bean id="authorizationInterceptor"
 	        class="org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor">
 	    <property name="authorizedRoles" value="administrator,zh"/>
+	</bean> -->
+	
+	<!-- 
+		http请求代理 服务器端
+	 -->
+	<bean name="customHttpServer"
+        class="org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter">
+	    <property name="service" ref="customService"/>
+	    <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
 	</bean>
 	
+	<bean id="httpServer"
+	        class="org.springframework.remoting.support.SimpleHttpServerFactoryBean">
+	    <property name="contexts">
+	        <util:map>
+	            <entry key="/http/customService" value-ref="customHttpServer"/>
+	        </util:map>
+	    </property>
+	    <property name="port" value="8080" />
+	</bean>
+	
+	
+	<!-- 
+		webservice服务器端
+	 -->
+	<bean class="org.bear.bookstore.web.jaxws.CustomServiceEndpoint"></bean>
+	<bean class="org.springframework.remoting.jaxws.SimpleJaxWsServiceExporter">
+	    <property name="baseAddress" value="http://localhost:81/services/"/>
+	</bean>
+	
+	
+	<!-- 
+		JMS-common
+	 -->
+	 <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://127.0.0.1:61616"/>
+    </bean>
+
+    <bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="mmm"/>
+    </bean>
+    
+    <!-- 
+    	JMS server
+     -->
+     <bean id="jmsServer"
+            class="org.springframework.jms.remoting.JmsInvokerServiceExporter">
+        <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
+        <property name="service" ref="customService"/>
+    </bean>
+
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="destination" ref="queue"/>
+        <property name="concurrentConsumers" value="3"/>
+        <property name="messageListener" ref="jmsServer"/>
+    </bean>
 </beans>

@@ -505,7 +505,7 @@
 		rmi客户端引用服务
 	 -->
 	<bean id="clientRmiService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean" lazy-init="true">
-	    <property name="serviceUrl" value="rmi://127.0.0.1:1199/customService"/>
+	    <property name="serviceUrl" value="rmi://172.16.20.59:1199/customService"/>
 	    <property name="serviceInterface" value="org.bear.bookstore.web.rmi.ICustomService"/>
 	</bean>
 	
@@ -528,4 +528,40 @@
 	    <property name="serviceUrl" value="http://localhost/bookstore-single/remoting/customService"/>
 	    <property name="serviceInterface" value="org.bear.bookstore.web.hessian.ICustomService"/>
 	</bean>
+	
+	
+	<!-- 
+		http客户端
+	 -->
+	<bean id="httpInvokerProxy" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+	    <property name="serviceUrl" value="http://127.0.0.1:8080/http/customService"/>
+	    <property name="serviceInterface" value="org.bear.bookstore.web.http.ICustomService"/>
+	    <!-- 
+	    	默认采用jdk的http方法，此处强制使用apache httpcomponents
+	     -->
+		<property name="httpInvokerRequestExecutor">
+		    <bean class="org.springframework.remoting.httpinvoker.HttpComponentsHttpInvokerRequestExecutor"/>
+		</property>
+	</bean>
+	
+	<!-- 
+		jax-ws客户端使用
+	 -->
+	<bean id="jaxCustomService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+	    <property name="serviceInterface" value="org.bear.bookstore.web.jaxws.ICustomService"/>
+	    <property name="wsdlDocumentUrl" value="http://localhost:81/services/jaxCustomService?wsdl"/>
+	    <property name="namespaceUri" value="http://jaxws.web.bookstore.bear.org/"/>
+	    <property name="serviceName" value="jaxCustomService"/>
+	    <property name="portName" value="CustomServiceEndpointPort"/>
+	</bean>
+	
+	<!-- 
+		JMS集成客户端使用 
+	 -->
+	<bean id="jmsCustomService"
+            class="org.springframework.jms.remoting.JmsInvokerProxyFactoryBean">
+        <property name="serviceInterface" value="org.bear.bookstore.web.jms.ICustomService"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="queue" ref="queue"/>
+    </bean>
 </beans>
