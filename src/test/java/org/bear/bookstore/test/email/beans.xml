@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+	<!--
+		①邮件服务器
+		如果是用java8，发送邮件会失败，
+		http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html
+		下载jar包进行替换，替换jdk1874\jre\lib\security下面的两个jar包即可
+	--> 
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">  
+        <property name="protocol" value="smtp" />  
+        <property name="host" value="smtp.qq.com" />  
+        <property name="port" value="465" />  
+        <property name="username" value="1528695560@qq.com" />  
+        <!-- 
+        	此处为客户端授权码，账户设置开启stmp服务时候发短信获得
+         -->
+        <property name="password" value="evrjzfvsimjuebjibby" />  
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="javaMailProperties">  
+            <props>  
+                <prop key="mail.smtp.auth">true</prop>  
+                <!-- 如果是网易邮箱， mail.smtp.starttls.enable 设置为 false-->  
+                <prop key="mail.smtp.ssl.enable">true</prop>  
+                <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>  
+            </props>  
+        </property>  
+    </bean>  
+    
+    <!--②异步线程执行器 -->  
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">  
+        <property name="corePoolSize" value="10" />  
+        <property name="maxPoolSize" value="30" />  
+    </bean>  
+      
+    <bean id="mailService" class="org.bear.bookstore.test.email.MailServiceImpl">  
+        <property name="mailSender" ref="mailSender" />  
+        <property name="taskExecutor" ref="taskExecutor" />  
+    </bean>  
+</beans>
