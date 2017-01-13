@@ -42,6 +42,13 @@
         <property name="assembler" ref="assembler"/>
         <property name="namingStrategy" ref="namingStrategy"/>
         <property name="autodetect" value="true"/>
+        <property name="notificationListenerMappings">
+			<map>
+				<entry key="*">
+					<bean class="org.bear.bookstore.test.jmx.ConfigNotificationListener" />
+				</entry>
+			</map>
+		</property>
     </bean>
 
     <bean id="jmxAttributeSource"

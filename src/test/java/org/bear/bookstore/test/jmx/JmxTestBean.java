@@ -4,7 +4,6 @@ public class JmxTestBean implements IJmxTestBean{
 
     private String name;
     private int age;
-    private boolean isSuperman;
 
     public int getAge() {
         return age;
