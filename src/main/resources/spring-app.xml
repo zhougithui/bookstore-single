@@ -21,7 +21,7 @@
 	<!-- 加载配置文件 -->
 	<context:property-placeholder location="classpath:application-${spring.profiles.active}.properties"/>
 	<!-- 扫描service自动注入为bean -->
-	<context:component-scan base-package="org.bear.bookstore.service.impl,org.bear.bookstore.dao.impl" />
+	<context:component-scan base-package="org.bear.bookstore.service.impl,org.bear.bookstore.dao.impl,org.bear.bookstore.quartz" />
 	
 	<!-- 
 		激活自动代理功能Enables the use of the @AspectJ style of Spring AOP
@@ -151,4 +151,53 @@
         <property name="concurrentConsumers" value="3"/>
         <property name="messageListener" ref="jmsServer"/>
     </bean>
+    
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+	<task:executor id="myExecutor" pool-size="5"/>
+	<task:scheduler id="myScheduler" pool-size="10"/> 
+	
+	
+	<!-- <task:scheduled-tasks scheduler="myScheduler">
+	    <task:scheduled ref="beanA" method="methodA" fixed-delay="5000" initial-delay="1000"/>
+	    <task:scheduled ref="beanB" method="methodB" fixed-rate="5000"/>
+	    <task:scheduled ref="beanC" method="methodC" cron="*/5 * * * * MON-FRI"/>
+	</task:scheduled-tasks> -->
+	
+	
+	<bean name="exampleJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+	    <property name="jobClass" value="org.bear.bookstore.quartz.ExampleJob"/>
+	    <property name="jobDataAsMap">
+	        <map>
+	            <entry key="timeout" value="5"/>
+	        </map>
+	    </property>
+	</bean>
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="exampleJob"/>
+	    <!-- run every morning at 6 AM -->
+	    <property name="cronExpression" value="0/3 * * * * ?"/>
+	</bean>
+	
+	<bean id="exampleBusinessObject" class="org.bear.bookstore.quartz.ExampleBusinessObject"/>
+	<bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject" ref="exampleBusinessObject"/>
+	    <property name="targetMethod" value="doIt"/>
+	</bean>
+	<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+	    <!-- see the example of method invoking job above -->
+	    <property name="jobDetail" ref="jobDetail"/>
+	    <!-- 10 seconds -->
+	    <property name="startDelay" value="1000"/>
+	    <!-- repeat every 50 seconds -->
+	    <property name="repeatInterval" value="5000"/>
+	</bean>
+	
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	    <property name="triggers">
+	        <list>
+	            <ref bean="cronTrigger"/>
+	            <ref bean="simpleTrigger"/>
+	        </list>
+	    </property>
+	</bean>
 </beans>
