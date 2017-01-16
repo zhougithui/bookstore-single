@@ -163,7 +163,9 @@
 	    <location>/error</location>
 	</error-page>
 	
-	
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
 	
 	<servlet>
 	    <servlet-name>customHessianServer</servlet-name>
