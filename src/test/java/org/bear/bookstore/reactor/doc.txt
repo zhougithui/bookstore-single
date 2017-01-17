@@ -1,0 +1,57 @@
+下面举例说明，为实现异步目标，响应式技术和 Reactor 模块该如何搭配：
+	Spring XD + Reactor-Net (Core/Stream)： 使用 Reactor 作为 Sink/Source IO 驱动。
+	Grails | Spring + Reactor-Stream (Core)： 用 Stream 和 Promise 做后台处理。
+	Spring Data + Reactor-Bus (Core)： 发射数据库事件 (保存/删除/…​)。
+	Spring Integration Java DSL + Reactor Stream (Core)： Spring 集成的微批量信息通道。
+	RxJavaReactiveStreams + RxJava + Reactor-Core： 融合富结构与高效异步 IO 处理者
+	RxJavaReactiveStreams + RxJava + Reactor-Net (Core/Stream)： 用 RxJava 做数据输入，异步 IO 驱动做传输。
+	
+	
+响应式数据流	Reactor 模块	实现	描述
+Processor
+reactor-core, reactor-stream
+reactor.core.processor., reactor.rx.
+
+Reactor-core：提供背压就绪的RingBuffer*Processor 等多种Processor
+reactor-streeam：提供全套的操作语句和广播机制
+
+
+Publisher
+reactor-core, reactor-bus, reactor-stream, reactor-net
+reactor.core.processor., reactor.rx.stream., reactor.rx.action., reactor.io.net.
+
+Reactor-core：Processors里植入Published
+Reactor-Bus： 提供无界的路由事件的发射发布机制
+Reactor-stream：Publisher中直接引入数据流扩展
+Reactor-net：提供2中发布方式：一种是Channel，另一种是flush和闭环回调
+
+
+Subscriber
+reactor-core, reactor-bus, reactor-stream, reactor-net
+reactor.core.processor., reactor.bus.EventBus., reactor.rx.action., reactor.io.net.impl.
+
+Reactor-core：Processors植入 Subscriber
+Reactor-bus：通过无界Publisher/Subcriber机制扩展总线能力
+Reactor-stream：订阅行为通过计算指定回调实现
+Reactor-net： IO 层实现处理写入，关闭和 flush
+
+
+Subscription
+reactor-stream, reactor-net
+reactor.rx.subscription., reactor.io.net.impl.
+
+Reactor-Stream：提供了最优化过 PushSubscriptions 和 缓冲就绪的 ReactiveSubscription；
+Reactor-net：通过定制Subscription 异步 IO 用户端实现背压
+
+
+
+
+Reactor 核心含有如下特性：
+	通用 IO & 函数式类型，一些 Java 8 接口的反向移植
+	函数，提供者，消费者，谓词，双向消费者，双向函数
+	元组
+	资源池、暂停器、定时器
+	缓冲器，编解码和少量预定义的编解码器
+	环境上下文
+	调度者约定和几个预定义调度者
+	预定义响应式数据流处理者
