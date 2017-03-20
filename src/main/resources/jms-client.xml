@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+	<!-- 
+		JMS集成客户端使用 
+	 -->
+	<bean id="jmsCustomService"
+            class="org.springframework.jms.remoting.JmsInvokerProxyFactoryBean">
+        <property name="serviceInterface" value="org.bear.bookstore.web.jms.ICustomService"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="queue" ref="queue"/>
+    </bean>
+</beans>

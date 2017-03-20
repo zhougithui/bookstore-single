@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+	<!-- 
+		spring 观察者模式的模型抽象使用实例
+		使用的是java的EventObject以及EventListener
+		
+		继承 ApplicationEvent 实现事件 BlackListEvent
+	 -->
+	<bean id="emailService" class="org.bear.bookstore.common.observer.EmailService">
+	    <property name="blackList">
+	        <list>
+	            <value>known.spammer@example.org</value>
+	            <value>known.hacker@example.org</value>
+	            <value>john.doe@example.org</value>
+	        </list>
+	    </property>
+	</bean>
+	
+	<!-- 实现ApplicationListener 创建事件监听 -->
+	<bean id="blackListNotifier" class="org.bear.bookstore.common.observer.BlackListNotifier">
+	    <property name="notificationAddress" value="blacklist@example.org"/>
+	</bean>
+	<bean id="entityCreatedNotifier" class="org.bear.bookstore.common.observer.EntityCreatedNotifier"></bean>
+</beans>

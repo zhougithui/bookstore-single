@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+			http://www.springframework.org/schema/util 
+			http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+	<!-- 
+		http客户端
+	 -->
+	<bean id="httpInvokerProxy" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+	    <property name="serviceUrl" value="http://127.0.0.1:8080/http/customService"/>
+	    <property name="serviceInterface" value="org.bear.bookstore.web.http.ICustomService"/>
+	    <!-- 
+	    	默认采用jdk的http方法，此处强制使用apache httpcomponents
+	     -->
+		<property name="httpInvokerRequestExecutor">
+		    <bean class="org.springframework.remoting.httpinvoker.HttpComponentsHttpInvokerRequestExecutor"/>
+		</property>
+	</bean>
+</beans>

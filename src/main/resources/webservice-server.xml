@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+	<!-- 
+		webservice服务器端
+	 -->
+	<bean class="org.bear.bookstore.web.jaxws.CustomServiceEndpoint"></bean>
+	<bean class="org.springframework.remoting.jaxws.SimpleJaxWsServiceExporter">
+	    <property name="baseAddress" value="http://localhost:81/services/"/>
+	</bean>
+	
+</beans>

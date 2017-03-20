@@ -3,25 +3,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:task="http://www.springframework.org/schema/task"
-	xmlns:jms="http://www.springframework.org/schema/jms"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 			http://www.springframework.org/schema/context
 			http://www.springframework.org/schema/context/spring-context-4.2.xsd
-			http://www.springframework.org/schema/task
-			http://www.springframework.org/schema/task/spring-task-4.2.xsd
-			http://www.springframework.org/schema/util 
-			http://www.springframework.org/schema/util/spring-util-4.2.xsd
 			http://www.springframework.org/schema/aop 
-			http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
-			http://www.springframework.org/schema/jms 
-			http://www.springframework.org/schema/jms/spring-jms-4.2.xsd">
+			http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 	<!-- 加载配置文件 -->
 	<context:property-placeholder location="classpath:application-${spring.profiles.active}.properties"/>
 	<!-- 扫描service自动注入为bean -->
-	<context:component-scan base-package="org.bear.bookstore.service.impl,org.bear.bookstore.dao.impl,org.bear.bookstore.quartz" />
+	<context:component-scan base-package="org.bear.bookstore.service.impl,org.bear.bookstore.dao,org.bear.bookstore.quartz" />
 	
 	<!-- 
 		激活自动代理功能Enables the use of the @AspectJ style of Spring AOP
@@ -37,57 +28,6 @@
 	<bean id="proxyReferecetAwareProcessor" class="org.bear.bookstore.common.aware.ProxyReferecetAwareProcessor"></bean>
 	
 	<!-- 
-		spring 观察者模式的模型抽象使用实例
-		使用的是java的EventObject以及EventListener
-	 -->
-	<bean id="emailService" class="org.bear.bookstore.common.observer.EmailService">
-	    <property name="blackList">
-	        <list>
-	            <value>known.spammer@example.org</value>
-	            <value>known.hacker@example.org</value>
-	            <value>john.doe@example.org</value>
-	        </list>
-	    </property>
-	</bean>
-	
-	<bean id="blackListNotifier" class="org.bear.bookstore.common.observer.BlackListNotifier">
-	    <property name="notificationAddress" value="blacklist@example.org"/>
-	</bean>
-	<bean id="entityCreatedNotifier" class="org.bear.bookstore.common.observer.EntityCreatedNotifier"></bean>
-	
-	
-	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
-	    <property name="customEditors">
-	        <map>
-	            <entry key="org.bear.bookstore.domain.Custom" value="org.bear.bookstore.common.editor.CustomEditor"/>
-	        </map>
-	    </property>
-	</bean>
-	
-	
-	<!-- 
-		服务器端定义rmi服务
-	 -->
-	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
-	    <!-- does not necessarily have to be the same name as the bean to be exported -->
-	    <property name="serviceName" value="customService"/>
-	    <property name="service" ref="customService"/>
-	    <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
-	    <!-- defaults to 1099 -->
-	    <property name="registryPort" value="1199"/>
-	</bean>
-	
-	
-	<!-- 
-		 Hessian 服务器端 http://HOST:80/AccountService
-	 -->
-	<bean name="customHessianServer" class="org.springframework.remoting.caucho.HessianServiceExporter">
-	    <property name="service" ref="customService"/>
-	    <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
-		<!-- <property name="interceptors" ref="authorizationInterceptor"/> -->
-	</bean>
-
-	<!-- 
 		http请求权限拦截
 		request.isUserInRole(String role);
 	 -->
@@ -96,108 +36,10 @@
 	    <property name="authorizedRoles" value="administrator,zh"/>
 	</bean> -->
 	
-	<!-- 
-		http请求代理 服务器端
-	 -->
-	<bean name="customHttpServer"
-        class="org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter">
-	    <property name="service" ref="customService"/>
-	    <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
-	</bean>
-	
-	<bean id="httpServer"
-	        class="org.springframework.remoting.support.SimpleHttpServerFactoryBean">
-	    <property name="contexts">
-	        <util:map>
-	            <entry key="/http/customService" value-ref="customHttpServer"/>
-	        </util:map>
-	    </property>
-	    <property name="port" value="8080" />
-	</bean>
-	
-	
-	<!-- 
-		webservice服务器端
-	 -->
-	<bean class="org.bear.bookstore.web.jaxws.CustomServiceEndpoint"></bean>
-	<bean class="org.springframework.remoting.jaxws.SimpleJaxWsServiceExporter">
-	    <property name="baseAddress" value="http://localhost:81/services/"/>
-	</bean>
-	
-	
-	<!-- 
-		JMS-common
-	 -->
-	 <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://127.0.0.1:61616"/>
-    </bean>
-
-    <bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="mmm"/>
-    </bean>
-    
-    <!-- 
-    	JMS server
-     -->
-     <bean id="jmsServer"
-            class="org.springframework.jms.remoting.JmsInvokerServiceExporter">
-        <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
-        <property name="service" ref="customService"/>
-    </bean>
-
-    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="connectionFactory" ref="connectionFactory"/>
-        <property name="destination" ref="queue"/>
-        <property name="concurrentConsumers" value="3"/>
-        <property name="messageListener" ref="jmsServer"/>
-    </bean>
-    
-    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
-	<task:executor id="myExecutor" pool-size="5"/>
-	<task:scheduler id="myScheduler" pool-size="10"/> 
-	
-	
-	<!-- <task:scheduled-tasks scheduler="myScheduler">
-	    <task:scheduled ref="beanA" method="methodA" fixed-delay="5000" initial-delay="1000"/>
-	    <task:scheduled ref="beanB" method="methodB" fixed-rate="5000"/>
-	    <task:scheduled ref="beanC" method="methodC" cron="*/5 * * * * MON-FRI"/>
-	</task:scheduled-tasks> -->
-	
-	
-	<bean name="exampleJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-	    <property name="jobClass" value="org.bear.bookstore.quartz.ExampleJob"/>
-	    <property name="jobDataAsMap">
-	        <map>
-	            <entry key="timeout" value="5"/>
-	        </map>
-	    </property>
-	</bean>
-	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-	    <property name="jobDetail" ref="exampleJob"/>
-	    <!-- run every morning at 6 AM -->
-	    <property name="cronExpression" value="0/3 * * * * ?"/>
-	</bean>
-	
-	<bean id="exampleBusinessObject" class="org.bear.bookstore.quartz.ExampleBusinessObject"/>
-	<bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-	    <property name="targetObject" ref="exampleBusinessObject"/>
-	    <property name="targetMethod" value="doIt"/>
-	</bean>
-	<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
-	    <!-- see the example of method invoking job above -->
-	    <property name="jobDetail" ref="jobDetail"/>
-	    <!-- 10 seconds -->
-	    <property name="startDelay" value="1000"/>
-	    <!-- repeat every 50 seconds -->
-	    <property name="repeatInterval" value="5000"/>
-	</bean>
-	
-	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-	    <property name="triggers">
-	        <list>
-	            <ref bean="cronTrigger"/>
-	            <ref bean="simpleTrigger"/>
-	        </list>
-	    </property>
-	</bean>
+	<import resource="hessian-server.xml"/>
+	<import resource="httpproxy-server.xml"/>
+	<import resource="jms-server.xml"/>
+	<!-- <import resource="rmi-server.xml"/> -->
+	<import resource="webservice-server.xml"/>
+	<import resource="spring-editor.xml"/>
 </beans>

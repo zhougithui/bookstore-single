@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+			http://www.springframework.org/schema/util 
+			http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+	<!-- 
+		http请求代理 服务器端
+	 -->
+	<bean name="customHttpServer"
+        class="org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter">
+	    <property name="service" ref="customService"/>
+	    <property name="serviceInterface" value="org.bear.bookstore.service.ICustomService"/>
+	</bean>
+	
+	<bean id="httpServer"
+	        class="org.springframework.remoting.support.SimpleHttpServerFactoryBean">
+	    <property name="contexts">
+	        <util:map>
+	            <entry key="/http/customService" value-ref="customHttpServer"/>
+	        </util:map>
+	    </property>
+	    <property name="port" value="8080" />
+	</bean>
+</beans>

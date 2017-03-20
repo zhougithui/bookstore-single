@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:websocket="http://www.springframework.org/schema/websocket"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket-4.2.xsd">                    
+	<websocket:handlers allowed-origins="http://localhost">
+        <websocket:mapping path="/myHandler" handler="myHandler"/>
+        <websocket:mapping path="/myHandler1" handler="myHandler"/>
+        <websocket:handshake-interceptors>
+            <bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
+        </websocket:handshake-interceptors>
+        <websocket:sockjs websocket-enabled="true">
+        	<websocket:transport-handlers register-defaults="false">
+        		<!-- 
+        			默认采用DefaultSockJsService，如果register-defaults为false
+        			则采用TransportHandlingSockJsService，并且设置自己的TransportHandler
+        			result.add(new XhrPollingTransportHandler());
+					result.add(new XhrReceivingTransportHandler());
+					result.add(new XhrStreamingTransportHandler());
+					result.add(new JsonpPollingTransportHandler());
+					result.add(new JsonpReceivingTransportHandler());
+					result.add(new EventSourceTransportHandler());
+					result.add(new HtmlFileTransportHandler());
+					try {
+						result.add(new WebSocketTransportHandler(new DefaultHandshakeHandler()));
+					}
+        		 -->
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.XhrPollingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.XhrReceivingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.XhrStreamingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.JsonpPollingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.JsonpReceivingTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.EventSourceTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.HtmlFileTransportHandler"></bean>
+        		<bean class="org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler">
+        			<constructor-arg>
+        				<bean class="org.springframework.web.socket.server.support.DefaultHandshakeHandler"></bean>
+        			</constructor-arg> 
+        		</bean>
+        	</websocket:transport-handlers>
+        </websocket:sockjs>
+    </websocket:handlers>
+    <!-- 
+    <bean class="org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean">
+        <property name="maxTextMessageBufferSize" value="8192"/>
+        <property name="maxBinaryMessageBufferSize" value="8192"/>
+    </bean> -->
+    
+    
+    <!--   stomp and message broker config  start -->  
+    <websocket:message-broker application-destination-prefix="/app">  
+        <websocket:transport send-timeout="15000" send-buffer-size="524288" message-size="131072" />
+        <!-- websocket 底层连接地址 -->  
+        <websocket:stomp-endpoint path="/marcopolo" >  
+        	<websocket:handshake-interceptors>
+				<bean class="org.bear.bookstore.web.ws.HandshakeInterceptor"></bean>
+        	</websocket:handshake-interceptors>
+            <websocket:sockjs/> 
+        </websocket:stomp-endpoint>  
+        <!-- 
+        	<websocket:simple-broker prefix="/topic,/queue" />
+        	
+        	system-login="system" system-passcode="manager" 
+			client-login="system" client-passcode="manager"
+         -->
+        <websocket:stomp-broker-relay 
+        	prefix="/topic,/queue"
+			relay-host="127.0.0.1" relay-port="61613" 
+			heartbeat-send-interval="1000" heartbeat-receive-interval="1000"/>
+        <websocket:client-inbound-channel>
+        	<websocket:executor core-pool-size="4" max-pool-size="8" keep-alive-seconds="60" queue-capacity="100"/>
+        </websocket:client-inbound-channel>
+        <websocket:client-outbound-channel>
+        	<websocket:executor core-pool-size="4" max-pool-size="8" keep-alive-seconds="60" queue-capacity="100"/>
+        </websocket:client-outbound-channel>
+    </websocket:message-broker>  
+    <!--   stomp and message broker config  end--> 
+</beans>

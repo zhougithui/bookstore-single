@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+	<!-- 
+		@Service("customService")
+		public class CustomServiceImpl implements ICustomService, ProxyReferenceAware {
+		@Autowired
+		private ICustomDao customDao;
+		
+		@Value("十里河,zh")
+		private Custom custom;
+	 -->
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+	    <property name="customEditors">
+	        <map>
+	            <entry key="org.bear.bookstore.domain.Custom" value="org.bear.bookstore.common.editor.CustomEditor"/>
+	        </map>
+	    </property>
+	</bean>
+</beans>
