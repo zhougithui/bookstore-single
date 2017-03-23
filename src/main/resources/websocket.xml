@@ -11,10 +11,20 @@
         http://www.springframework.org/schema/websocket/spring-websocket-4.2.xsd">                    
 	<websocket:handlers allowed-origins="http://localhost">
         <websocket:mapping path="/myHandler" handler="myHandler"/>
-        <websocket:mapping path="/myHandler1" handler="myHandler"/>
         <websocket:handshake-interceptors>
             <bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
         </websocket:handshake-interceptors>
+        <!-- 
+        	1、websocket = new WebSocket("ws://localhost/bookstore-single/myHandler"); 
+    		2、websocket = new SockJS("http://localhost/bookstore-single/myHandler"); 
+    		
+    		如果设置了websocket:sockjs websocket-enabled为true，则1执行出错，因为设置了则是SockJsHttpRequestHandler对请求进行处理
+    		为空、为/info、为/iframe[0-9-.a-z_]*.html、为/websocket
+    		/085/p5gg22gi/websocket
+    		String serverId = pathSegments[0];
+			String sessionId = pathSegments[1];
+			String transport = pathSegments[2];
+         -->
         <websocket:sockjs websocket-enabled="true">
         	<websocket:transport-handlers register-defaults="false">
         		<!-- 

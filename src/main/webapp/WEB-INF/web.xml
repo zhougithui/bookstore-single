@@ -35,6 +35,7 @@
 	<filter>
 		<filter-name>characterEncodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<async-supported>true</async-supported>
 		<init-param>
 			<param-name>encoding</param-name>
 			<param-value>UTF-8</param-value>
@@ -68,6 +69,7 @@
 	<filter>
 	    <filter-name>httpPutFormFilter</filter-name>
 	    <filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+	    <async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
 	    <filter-name>httpPutFormFilter</filter-name>
@@ -87,6 +89,7 @@
 	<filter>
 		<filter-name>shallowEtagHeaderFilter</filter-name>
 		<filter-class>org.springframework.web.filter.ShallowEtagHeaderFilter</filter-class>
+		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
 		<filter-name>shallowEtagHeaderFilter</filter-name>

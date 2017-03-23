@@ -8,7 +8,7 @@
 </head>
 <body>
 <script type="text/javascript">
-var wsUri ="ws://localhost/bookstore-single/myHandler1"; 
+var wsUri ="ws://localhost/bookstore-single/myHandler"; 
 var output;  
 
 function init() { 
@@ -19,7 +19,7 @@ function init() {
 function testWebSocket() { 
     //websocket = new WebSocket(wsUri); 
    
-    websocket = new SockJS("http://localhost/bookstore-single/myHandler1"); 
+    websocket = new SockJS("http://localhost/bookstore-single/myHandler"); 
     
     websocket.onopen = function(evt) { 
         onOpen(evt) 

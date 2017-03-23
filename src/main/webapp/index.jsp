@@ -36,6 +36,18 @@
         },  
         timeout:3000  
     });
+    
+    
+    var resizeTimer=null;
+    $(window).on('resize',function(){
+           if(resizeTimer){
+               clearTimeout(resizeTimer)
+           }
+           resizeTimer=setTimeout(function(){
+               console.log("window resize");
+           },400);
+       }
+    );
 </script>
 </head>
 <body>

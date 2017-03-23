@@ -1,5 +1,5 @@
 <!-- activemq开启stomp的支持 -->
 <transportConnectors>
 	<transportConnector name="openwire" uri="tcp://0.0.0.0:61616"/>
-	<transportConnector name="stomp" uri="stomp://localhost:61613"/>
+	<transportConnector name="stomp" uri="stomp://localhost:61613?maximumConnections=1000&amp;wireformat.maxFrameSize=104857600&amp;transport.useInactivityMonitor=false&amp;wireFormat.maxInactivityDuration=0"/>
 </transportConnectors>
