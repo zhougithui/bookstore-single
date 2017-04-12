@@ -17,7 +17,7 @@ public class ThreadPoolTest {
     	  * 如下设置：由于任务未能及时的执行完毕，所以队列会存在5个任务，会创建10个线程去执行任务，如果队列设置为4，则会出现拒绝服务
     	  */
          ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 10, 200, TimeUnit.MILLISECONDS,
-                 new ArrayBlockingQueue<Runnable>(5));
+                 new ArrayBlockingQueue<Runnable>(3));
           
          for(int i=0;i<15;i++){
              MyTask myTask = new MyTask(i);
