@@ -41,7 +41,9 @@ public class Point {
 		 * 当然重读的时候还可以使用tryOptimisticRead，此时需要结合循环了，即类似CAS方式 读锁又重新返回一个stampe值
 		 */
 		if (!stampedLock.validate(stamp)) {
+			System.out.println("1-" + stamp);
 			stamp = stampedLock.readLock(); // 读锁
+			System.out.println("2-" + stamp);
 			try {
 				currentX = x;
 				currentY = y;
@@ -51,5 +53,26 @@ public class Point {
 		}
 		// 读锁验证成功后才执行计算，即读的时候没有发生写
 		return Math.sqrt(currentX * currentX + currentY * currentY);
+	}
+	
+	public static void main(String[] args) {
+		Point point = new Point();
+		new Thread(()-> {
+			while(true)
+				point.distanceFromOrigin();
+		}).start();
+		new Thread(()-> {
+			for(int i=0; i<20; i++){
+				int x = i;
+				new Thread(()-> {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					point.move(10d * x, 10d);
+				}).start();
+			}
+		}).start();
 	}
 }
