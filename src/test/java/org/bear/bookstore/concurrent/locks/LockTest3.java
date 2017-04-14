@@ -1,4 +1,4 @@
-package org.bear.bookstore.lock;
+package org.bear.bookstore.concurrent.locks;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Condition;

@@ -1,4 +1,4 @@
-package org.bear.bookstore.lock;
+package org.bear.bookstore.concurrent.locks;
 public class WaitTest1 {
 
     public static void main(String[] args) {

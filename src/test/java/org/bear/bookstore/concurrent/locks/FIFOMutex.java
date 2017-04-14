@@ -1,4 +1,4 @@
-package org.bear.bookstore.lock;
+package org.bear.bookstore.concurrent.locks;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

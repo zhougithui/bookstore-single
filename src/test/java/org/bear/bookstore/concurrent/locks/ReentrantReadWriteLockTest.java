@@ -1,4 +1,4 @@
-package org.bear.bookstore.lock.tools;
+package org.bear.bookstore.concurrent.locks;
 
 import java.util.Map;
 import java.util.TreeMap;

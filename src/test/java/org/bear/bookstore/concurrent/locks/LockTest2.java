@@ -1,46 +1,47 @@
-/*package org.bear.bookstore.lock;
+package org.bear.bookstore.concurrent.locks;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-// LockTest1.java
+// LockTest2.java
 // 仓库
-class Depot { 
+class Depot1 { 
     private int size;        // 仓库的实际数量
     private Lock lock;        // 独占锁
 
-    public Depot() {
+    public Depot1() {
         this.size = 0;
         this.lock = new ReentrantLock();
     }
 
     public void produce(int val) {
-        lock.lock();
-        try {
+//        lock.lock();
+//        try {
             size += val;
             System.out.printf("%s produce(%d) --> size=%d\n", 
                     Thread.currentThread().getName(), val, size);
-        } finally {
-            lock.unlock();
-        }
+//        } catch (InterruptedException e) {
+//        } finally {
+//            lock.unlock();
+//        }
     }
 
     public void consume(int val) {
-        lock.lock();
-        try {
+//        lock.lock();
+//        try {
             size -= val;
             System.out.printf("%s consume(%d) <-- size=%d\n", 
                     Thread.currentThread().getName(), val, size);
-        } finally {
-            lock.unlock();
-        }
+//        } finally {
+//            lock.unlock();
+//        }
     }
 }; 
 
 // 生产者
-class Producer {
-    private Depot depot;
+class Producer1 {
+    private Depot1 depot;
     
-    public Producer(Depot depot) {
+    public Producer1(Depot1 depot) {
         this.depot = depot;
     }
 
@@ -55,10 +56,10 @@ class Producer {
 }
 
 // 消费者
-class Customer {
-    private Depot depot;
+class Customer1 {
+    private Depot1 depot;
     
-    public Customer(Depot depot) {
+    public Customer1(Depot1 depot) {
         this.depot = depot;
     }
 
@@ -72,11 +73,11 @@ class Customer {
     }
 }
 
-public class LockTest1 {  
+public class LockTest2 {  
     public static void main(String[] args) {  
-        Depot mDepot = new Depot();
-        Producer mPro = new Producer(mDepot);
-        Customer mCus = new Customer(mDepot);
+        Depot1 mDepot = new Depot1();
+        Producer1 mPro = new Producer1(mDepot);
+        Customer1 mCus = new Customer1(mDepot);
 
         mPro.produce(60);
         mPro.produce(120);
@@ -84,4 +85,4 @@ public class LockTest1 {
         mCus.consume(150);
         mPro.produce(110);
     }
-}*/
+}
