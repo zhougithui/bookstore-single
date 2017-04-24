@@ -1,5 +1,6 @@
 package org.bear.bookstore.concurrent.locks;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ReentrantLockTest {
@@ -22,9 +23,38 @@ public class ReentrantLockTest {
 		//还原锁的状态
 		lock.unlock();
 	}
+	
+	public void x(){
+		boolean b = false;
+		try {
+			b = lock.tryLock(1, TimeUnit.SECONDS);
+			System.out.println(b);
+		} catch (InterruptedException e) {
+			System.out.println("fdsafdsaxxxxxx");
+			e.printStackTrace();
+		}
+		System.out.println("get lock thread:" + Thread.currentThread().getName());
+		try {
+			TimeUnit.SECONDS.sleep(3);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("fdsafdsafsda-------");
+		if(b){
+			lock.unlock();
+		}
+	}
+	public void tryLockTest(){
+		new Thread(() -> {
+			x();
+		}).start();
+		new Thread(() -> {
+			x();
+		}).start();
+	}
 	public static void main(String[] args) {
 		ReentrantLockTest test = new ReentrantLockTest();
-		for(int i=0; i<10; i++){
+		/*for(int i=0; i<10; i++){
 			Thread t = new Thread(new Runnable() {
 				
 				@Override
@@ -33,6 +63,7 @@ public class ReentrantLockTest {
 				}
 			}, i+"");
 			t.start();
-		}
+		}*/
+		test.tryLockTest();
 	}
 }

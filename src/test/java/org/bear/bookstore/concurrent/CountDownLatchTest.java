@@ -38,8 +38,8 @@ public class CountDownLatchTest {
 		}).start();
 		for(int i=0; i<10; i++){
 			new Thread(() -> {
-				System.out.println("队员来了：" + Thread.currentThread().getName());
 				cdl.countDown();
+				System.out.println("队员来了：" + Thread.currentThread().getName());
 			}, ""+i).start();
 		}
 		

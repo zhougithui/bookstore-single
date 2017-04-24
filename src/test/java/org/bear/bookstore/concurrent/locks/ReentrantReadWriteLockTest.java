@@ -1,112 +1,64 @@
 package org.bear.bookstore.concurrent.locks;
 
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ReentrantReadWriteLockTest {
-
-}
-
-/**
- * how to perform lock downgrading after updating a cache 
- * (exception handling is particularly tricky when handling
- *  multiple locks in a non-nested fashion): 
- * @author q
- *
- */
-class CachedData {
-	Object data;
-	volatile boolean cacheValid;
-	final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-
-	void processCachedData() {
-		rwl.readLock().lock();
-		if (!cacheValid) {
-			// Must release read lock before acquiring write lock
-			rwl.readLock().unlock();
-			rwl.writeLock().lock();
-			try {
-				// Recheck state because another thread might have
-				// acquired write lock and changed state before we did.
-				if (!cacheValid) {
-					data = "data";
-					cacheValid = true;
+	private int count = 0;
+	
+	private ReentrantReadWriteLock rw = new ReentrantReadWriteLock();
+	public void r(){
+		try {
+			rw.readLock().lock();
+			System.out.println("read count " + count + "$$$$$getReadLockCount=" + rw.getReadLockCount()
+				+ "$$$$getWriteHoldCount()" + rw.getWriteHoldCount());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			rw.readLock().unlock();
+		}
+	}
+	public void w(){
+		try {
+			rw.writeLock().lock();
+			count++;
+			System.out.println("write count " + count + "$$$$$$getQueueLength=" + rw.getQueueLength()
+					+ "$$$$getWriteHoldCount()" + rw.getWriteHoldCount());
+			Thread.yield();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			rw.writeLock().unlock();
+		}
+	}
+	public static void main(String[] args) throws InterruptedException {
+		ReentrantReadWriteLockTest test = new ReentrantReadWriteLockTest();
+		
+		ExecutorService service = Executors.newCachedThreadPool();
+		for(int i=0; i<10; i++){
+			service.execute(()->{
+				int x = 0;
+				while(x<10){
+					test.r();
+					x++;
 				}
-				// Downgrade by acquiring read lock before releasing write lock
-				rwl.readLock().lock();
-			} finally {
-				rwl.writeLock().unlock(); // Unlock write, still hold read
-			}
+			});
 		}
-
-		try {
-			use(data);
-		} finally {
-			rwl.readLock().unlock();
+		
+		for(int i=0; i<2; i++){
+			service.execute(()->{
+				int x = 0;
+				while(x<100){
+					test.w();
+					x++;
+				}
+			});
 		}
-	}
-
-	private void use(Object data2) {
-
-	}
-}
-
-/**
- * ReentrantReadWriteLocks can be used to improve concurrency 
- * in some uses of some kinds of Collections. This is typically 
- * worthwhile only when the collections are expected to be large, 
- * accessed by more reader threads than writer threads, and entail 
- * operations with overhead that outweighs synchronization overhead. 
- * For example, here is a class using a TreeMap that is 
- * expected to be large and concurrently accessed
- * @author q
- *
- */
-class RWDictionary {
-	private final Map<String, Data> m = new TreeMap<>();
-	private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-	private final Lock r = rwl.readLock();
-	private final Lock w = rwl.writeLock();
-
-	public Data get(String key) {
-		r.lock();
-		try {
-			return m.get(key);
-		} finally {
-			r.unlock();
-		}
-	}
-
-	public String[] allKeys() {
-		r.lock();
-		try {
-			return (String[]) m.keySet().toArray();
-		} finally {
-			r.unlock();
-		}
-	}
-
-	public Data put(String key, Data value) {
-		w.lock();
-		try {
-			return m.put(key, value);
-		} finally {
-			w.unlock();
-		}
-	}
-
-	public void clear() {
-		w.lock();
-		try {
-			m.clear();
-		} finally {
-			w.unlock();
-		}
+		
+		TimeUnit.SECONDS.sleep(3);
+		service.shutdownNow();
 	}
 }
 
-class Data {
-
-}

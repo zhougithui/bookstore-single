@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -47,8 +48,8 @@ public class Test {
 		});
 		System.out.println(Thread.currentThread().getName());*/
 		
-		Path path = Paths.get("D:/工作文件");
-		File file = path.toFile();
+		/*Path path = Paths.get("D:/工作文件");
+		File file = path.toFile();*/
 		/*File[] files = file.listFiles((File name) -> {
 			return name.isDirectory();
 		});
@@ -64,14 +65,39 @@ public class Test {
 		})).start();*/
 		
 		
-		String[] names = {"lili", "pawl"};
+		/*String[] names = {"lili", "pawl"};
 		List<Runnable> list = new ArrayList<>();
 		for(String name : names){
 			list.add(()->{System.out.println(name);});
 		}
 		for(Runnable r : list){
 			new Thread(r).start();;
+		}*/
+		//System.out.println(f(2));
+		
+		System.out.println(new Object());
+		
+		HashMap<Test, String> map = new HashMap<>();
+		Test t = new Test();
+		Test t1 = new Test();
+		map.put(t, "a");
+		map.put(t1, "b");
+		System.out.println(map.get(t));
+		int h ;
+		System.out.println((16 -1) & ((h = t.hashCode()) ^ (h >>> 16)));
+	}
+	public static int f(int n){
+		if(n == 0 || n == 1)
+			return 1;
+		int f0 = 1;
+		int f1 = 1;
+		int count = 0;
+		for(int i=2; i<= n; i++){
+			count = f0 + f1;
+			f0 = f1;
+			f1 = count;
 		}
+		return count;
 	}
 	/*public static Runnable uncheck(RunnableEx runner){
 		return () -> {

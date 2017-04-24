@@ -7,5 +7,6 @@ public class SemaphoreTest {
 		Semaphore s = new Semaphore(1);
 		s.acquire(1);
 		s.release();
+		System.out.println("--------------");
 	}
 }
