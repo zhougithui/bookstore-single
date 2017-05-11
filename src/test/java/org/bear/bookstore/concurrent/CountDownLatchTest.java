@@ -32,7 +32,6 @@ public class CountDownLatchTest {
 					}, ""+i).start();
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}).start();
