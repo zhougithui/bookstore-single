@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-4.2.xsd
+			http://www.springframework.org/schema/batch 
+			http://www.springframework.org/schema/batch/spring-batch.xsd">
+	<!-- 加载配置文件 -->
+	<!-- 扫描service自动注入为bean -->
+	<context:component-scan base-package="org.bear.bookstore.batch" />
+	<bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+
+	<bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+
+	<batch:job id="helloWorldJob">
+		<batch:step id="step_hello" next="step_world">
+			<batch:tasklet ref="hello" transaction-manager="transactionManager"></batch:tasklet>
+		</batch:step>
+		<batch:step id="step_world">
+			<batch:tasklet ref="world" transaction-manager="transactionManager"></batch:tasklet>
+		</batch:step>
+	</batch:job>
+	
+	<bean id="hello" class="org.bear.bookstore.batch.WriteTasklet">
+        <property name="message" value="Hello "></property>
+    </bean>
+
+    <bean id="world" class="org.bear.bookstore.batch.WriteTasklet">
+        <property name="message" value=" World!"></property>
+    </bean>
+</beans>
