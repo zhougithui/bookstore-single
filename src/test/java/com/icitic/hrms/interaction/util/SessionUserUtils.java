@@ -1,6 +1,6 @@
 package com.icitic.hrms.interaction.util;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.icitic.hrms.common.pojo.vo.User;
 
