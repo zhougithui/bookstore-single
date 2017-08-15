@@ -38,7 +38,7 @@
 	
 	<import resource="hessian-server.xml"/>
 	<import resource="httpproxy-server.xml"/>
-	<import resource="jms-server.xml"/>
+	<!-- <import resource="jms-server.xml"/> -->
 	<!-- <import resource="rmi-server.xml"/> -->
 	<import resource="webservice-server.xml"/>
 	<import resource="spring-editor.xml"/>

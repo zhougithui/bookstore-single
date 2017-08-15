@@ -2,10 +2,16 @@ package org.bear.bookstore.web.custom;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import javax.validation.Valid;
 
@@ -25,6 +31,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.alibaba.fastjson.JSON;
+
 @Controller
 @RequestMapping("/api/cus")
 public class CustomController {
@@ -36,6 +44,41 @@ public class CustomController {
 	public Custom queryCustom(@PathVariable int id){
 		Custom cus = customService.select(id);
 		return cus;
+	}
+	
+	@RequestMapping("/getCusById")
+	@ResponseBody
+	public void queryCustomPost(@RequestParam String param, HttpServletResponse res){
+		HttpResult<List<Map<String,String>>> result = new HttpResult<>();
+		result.setMsg("fds");
+		result.setSuccess(true);
+		List<Map<String,String>> data = new ArrayList<>();
+		
+		Map<String,String> map = new HashMap<>();
+		map.put("name", "zmy");
+		Map<String,String> map1 = new HashMap<>();
+		map1.put("name", "zmy1");
+		
+		data.add(map);
+		data.add(map1);
+		
+		result.setData(data);
+		
+		TokenObject token = new TokenObject();
+		token.setSuccess(new Random().nextInt(100)%2 == 0 ? "" : "-1");
+		try {
+			res.getWriter().print(token.getSuccess().equals("-1") ? JSON.toJSONString(token) : JSON.toJSONString(result));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			try {
+				res.getWriter().close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -141,5 +184,10 @@ public class CustomController {
 		return "showUser" + StringUtils.capitalize(flag);
 	}
 	
-	
+	@RequestMapping("/token")
+	@ResponseBody
+	public TokenObject token(){
+		TokenObject token = new TokenObject();
+		return token;
+	}
 }
