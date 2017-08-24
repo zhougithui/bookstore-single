@@ -81,6 +81,7 @@ public class Test {
 		Test t = new Test();
 		Test t1 = new Test();
 		map.put(t, "a");
+		
 		map.put(t1, "b");
 		System.out.println(map.get(t));
 		int h ;
