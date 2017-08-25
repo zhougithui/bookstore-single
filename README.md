@@ -1,2 +1,2 @@
 # bookstore-single
-single web bookstore system test
+single my bookstore system test
