@@ -76,6 +76,10 @@ public class Test {
 		//System.out.println(f(2));
 		
 		System.out.println("{\"fdsa\"}".replace("\"", ""));
+		System.out.println("{\"fdsa\"}".replace("\"", ""));
+		System.out.println("{\"fdsa\"}".replace("\"", ""));
+		System.out.println("{\"fdsa\"}".replace("\"", ""));
+		System.out.println("{\"fdsa\"}".replace("\"", ""));
 	}
 	public static int f(int n){
 		if(n == 0 || n == 1)
