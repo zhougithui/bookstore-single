@@ -32,47 +32,47 @@ public class Test {
     private static final int TERMINATED =  3 << COUNT_BITS;
     private final static AtomicInteger ctl = new AtomicInteger(0 | RUNNING);
 	public static void main(String[] args) {
-		/*System.out.println(ctl.get() & CAPACITY);
+		System.out.println(ctl.get() & CAPACITY);
 		
-		System.out.println(ctl.get() & ~CAPACITY);*/
+		System.out.println(ctl.get() & ~CAPACITY);
 		
 		//new SubGreeter().greet();
 		
-		/*List<String> labels = new ArrayList<>();
+		List<String> labels = new ArrayList<>();
 		Stream<Button> stream = labels.stream().map(Button::new);
-		List<Button> buttons = stream.collect(Collectors.toList());*/
-		/*String[] arr = {"afda","fda"};
+		List<Button> buttons = stream.collect(Collectors.toList());
+		String[] arr = {"afda","fda"};
 		Arrays.sort(arr, (a, b) -> {
 			System.out.println(Thread.currentThread().getName());
 			return a.compareTo(b);
 		});
-		System.out.println(Thread.currentThread().getName());*/
+		System.out.println(Thread.currentThread().getName());
 		
-		/*Path path = Paths.get("D:/工作文件");
-		File file = path.toFile();*/
-		/*File[] files = file.listFiles((File name) -> {
+		Path path = Paths.get("D:/工作文件");
+		File file = path.toFile();
+		File[] files = file.listFiles((File name) -> {
 			return name.isDirectory();
 		});
 		files = file.listFiles(File::isDirectory);
 		for(File f : files){
 			System.out.println(f.getName());
-		}*/
+		}
 		
-		/*new Thread(uncheck(()->{
+		new Thread(uncheck(()->{
 			Thread.sleep(100);
 			System.out.println("fdafdasfdsa");
 			return null;
-		})).start();*/
+		})).start();
 		
 		
-		/*String[] names = {"lili", "pawl"};
+		String[] names = {"lili", "pawl"};
 		List<Runnable> list = new ArrayList<>();
 		for(String name : names){
 			list.add(()->{System.out.println(name);});
 		}
 		for(Runnable r : list){
 			new Thread(r).start();;
-		}*/
+		}
 		//System.out.println(f(2));
 		
 		System.out.println("{\"fdsa\"}".replace("\"", ""));
