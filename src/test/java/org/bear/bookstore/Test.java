@@ -75,17 +75,7 @@ public class Test {
 		}*/
 		//System.out.println(f(2));
 		
-		System.out.println(new Object());
-		
-		HashMap<Test, String> map = new HashMap<>();
-		Test t = new Test();
-		Test t1 = new Test();
-		map.put(t, "a");
-		//fdasfdas
-		map.put(t1, "b");
-		System.out.println(map.get(t));
-		int h ;
-		System.out.println((16 -1) & ((h = t.hashCode()) ^ (h >>> 16)));
+		System.out.println("{\"fdsa\"}".replace("\"", ""));
 	}
 	public static int f(int n){
 		if(n == 0 || n == 1)
