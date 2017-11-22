@@ -708,7 +708,7 @@
 		</dependency>
 		
 		
-		<dependency>
+		<!-- <dependency>
 	      <groupId>org.springframework.boot</groupId>
 	      <artifactId>spring-boot-starter-web</artifactId>
 	      <version>1.4.1.RELEASE</version>
@@ -724,7 +724,7 @@
 	      <artifactId>tomcat-embed-jasper</artifactId>
 	      <version>8.5.5</version>
 	      <scope>provided</scope>
-	    </dependency>
+	    </dependency> -->
 	</dependencies>
 
 	<build>
