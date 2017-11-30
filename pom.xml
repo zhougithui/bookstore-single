@@ -667,7 +667,7 @@
 		<dependency>
 		    <groupId>com.rabbitmq</groupId>
 		    <artifactId>amqp-client</artifactId>
-		    <version>4.1.0</version>
+		    <version>5.0.0</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.struts/struts-tiles -->
