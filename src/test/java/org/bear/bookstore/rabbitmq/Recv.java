@@ -1,11 +1,9 @@
 package org.bear.bookstore.rabbitmq;
 
+import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.*;
 
 public class Recv
 {
@@ -25,16 +23,25 @@ public class Recv
 		System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 		
 		//创建队列消费者
-		QueueingConsumer consumer = new QueueingConsumer(channel);
+		Consumer consumer = new DefaultConsumer(channel);
 		//指定消费队列
-		channel.basicConsume(QUEUE_NAME, true, consumer);
-		while (true)
-		{
-			//nextDelivery是一个阻塞方法（内部实现其实是阻塞队列的take方法）
-			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-			String message = new String(delivery.getBody());
-			System.out.println(" [x] Received '" + message + "'");
-		}
+		channel.basicConsume(QUEUE_NAME, true, new DefaultConsumer(channel) {
+			@Override
+			public void handleDelivery(String consumerTag,
+									   Envelope envelope,
+									   AMQP.BasicProperties properties,
+									   byte[] body)
+					throws IOException
+			{
+				String routingKey = envelope.getRoutingKey();
+				String contentType = properties.getContentType();
+				long deliveryTag = envelope.getDeliveryTag();
+				String message = envelope.getExchange();
+				// (process the message components here ...)
+				System.out.println(" [x] Received '" + message + "'");
+				channel.basicAck(deliveryTag, false);
+			}
+		});
 
 	}
 }
